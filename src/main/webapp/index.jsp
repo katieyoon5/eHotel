@@ -4,7 +4,7 @@
 <%@ page import="com.demo.Hotel" %>
 
 <%
-    List<String> hotels = null;
+    List<Hotel> hotels = null;
 
     try {
         hotels = Hotel.getHotels();
@@ -31,34 +31,39 @@
     <h2 class="mt-4">Hotel List</h2>
 
     <% if (hotels == null || hotels.size() == 0) { %>
-        <h4>No hotels found</h4>
+    <h4>No hotels found</h4>
     <% } else { %>
 
-        <table class="table table-bordered mt-3">
-            <thead>
-                <tr>
-                    <th>Hotel Info</th>
-                </tr>
-            </thead>
-            <tbody>
+    <table class="table table-bordered mt-3">
+        <thead>
+        <tr>
+            <th>Hotel ID</th>
+            <th>Address</th>
+            <th>Rating</th>
+            <th>Chain ID</th>
+        </tr>
+        </thead>
+        <tbody>
 
-            <% for (String h : hotels) { %>
-                <tr>
-                    <td><%= h %></td>
-                </tr>
-            <% } %>
+        <% for (Hotel h : hotels) { %>
+        <tr>
+            <td><%= h.getHotelId() %></td>
+            <td><%= h.getAddress() %></td>
+            <td><%= h.getRating() %></td>
+            <td><%= h.getChainId() %></td>
+        </tr>
+        <% } %>
 
-            </tbody>
-        </table>
+        </tbody>
+    </table>
 
     <% } %>
 </div>
-    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
-    <script src="/assets/js/jquery.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+<script src="assets/bootstrap/js/bootstrap.min.js"></script>
+<script src="/assets/js/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
 
 <script>
-
 
 </script>
 

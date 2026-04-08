@@ -1,6 +1,7 @@
 -- =========================
 -- drop tables
 -- =========================
+DROP TABLE IF EXISTS Payment CASCADE;
 DROP TABLE IF EXISTS RoomAmenities CASCADE;
 DROP TABLE IF EXISTS RoomIssues CASCADE;
 DROP TABLE IF EXISTS RentingArchive CASCADE;
@@ -141,6 +142,16 @@ CREATE TABLE Renting (
                          FOREIGN KEY (SSN) REFERENCES Employee(SSN),
                          FOREIGN KEY (Hotel_ID, RoomNumber)
                              REFERENCES Room(Hotel_ID, RoomNumber)
+);
+-- =========================
+-- payment
+-- =========================
+CREATE TABLE Payment (
+                         Payment_ID SERIAL PRIMARY KEY,
+                         Rent_ID INT,
+                         Amount DECIMAL(10,2) CHECK (Amount > 0),
+                         Payment_Date DATE,
+                         FOREIGN KEY (Rent_ID) REFERENCES Renting(Rent_ID)
 );
 -- =========================
 -- archive tables
@@ -361,4 +372,3 @@ GROUP BY Hotel_ID;
 SELECT Hotel_ID, AVG(Price) AS avg_price
 FROM Room
 GROUP BY Hotel_ID;
-

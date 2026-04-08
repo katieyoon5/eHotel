@@ -80,11 +80,15 @@
 
             if (rs.next()) {
                 if ("customer".equals(user)){
-                response.sendRedirect("customerDashboard.jsp");
+                    session.setAttribute("loggedInUser", request.getParameter("username")); // customer username
+                    session.setAttribute("role", "customer");
+                    response.sendRedirect("customerDashboard.jsp");
                 }
                 else if ("employee".equals(user)){
-                                response.sendRedirect("employeeDashboard.jsp");
-                                }
+                    session.setAttribute("loggedInUser", request.getParameter("emp_username")); // employee username
+                    session.setAttribute("role", "employee");
+                    response.sendRedirect("employeeDashboard.jsp");
+                    }
             } else {
             %>
                 <p class="error">Invalid username or password for <%= user %>!</p>

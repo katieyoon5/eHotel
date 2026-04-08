@@ -61,7 +61,7 @@ CREATE TABLE Customer (
                           MiddleName TEXT,
                           LastName TEXT,
                           Address TEXT,
-                          RegistrationDate DATE,
+                          registrationDate DATE DEFAULT CURRENT_DATE,
                           Username TEXT UNIQUE,
                           Password TEXT
 );

@@ -1,6 +1,7 @@
 -- =========================
 -- drop tables
 -- =========================
+DROP TABLE IF EXISTS Payment CASCADE;
 DROP TABLE IF EXISTS RoomAmenities CASCADE;
 DROP TABLE IF EXISTS RoomIssues CASCADE;
 DROP TABLE IF EXISTS RentingArchive CASCADE;
@@ -61,7 +62,7 @@ CREATE TABLE Customer (
                           MiddleName TEXT,
                           LastName TEXT,
                           Address TEXT,
-                          registrationDate DATE DEFAULT CURRENT_DATE,
+                          RegistrationDate DATE DEFAULT CURRENT_DATE,
                           Username TEXT UNIQUE,
                           Password TEXT
 );
@@ -89,9 +90,9 @@ CREATE TABLE Room (
                       Price INT CHECK (Price > 0),
                       Capacity INT CHECK (Capacity > 0),
                       View TEXT CHECK (View IN ('sea', 'mountain')),
-  Extendable BOOLEAN,
-  PRIMARY KEY (Hotel_ID, RoomNumber),
-  FOREIGN KEY (Hotel_ID) REFERENCES Hotel(Hotel_ID)
+ Extendable BOOLEAN,
+ PRIMARY KEY (Hotel_ID, RoomNumber),
+ FOREIGN KEY (Hotel_ID) REFERENCES Hotel(Hotel_ID)
 );
 -- =========================
 -- multivalued attributes
@@ -141,6 +142,16 @@ CREATE TABLE Renting (
                          FOREIGN KEY (SSN) REFERENCES Employee(SSN),
                          FOREIGN KEY (Hotel_ID, RoomNumber)
                              REFERENCES Room(Hotel_ID, RoomNumber)
+);
+-- =========================
+-- payment
+-- =========================
+CREATE TABLE Payment (
+                         Payment_ID SERIAL PRIMARY KEY,
+                         Rent_ID INT,
+                         Amount DECIMAL(10,2) CHECK (Amount > 0),
+                         Payment_Date DATE,
+                         FOREIGN KEY (Rent_ID) REFERENCES Renting(Rent_ID)
 );
 -- =========================
 -- archive tables
@@ -322,14 +333,14 @@ CREATE TRIGGER renting_archive_trigger
 CREATE OR REPLACE FUNCTION prevent_overlap_booking()
 RETURNS TRIGGER AS $$
 BEGIN
-   IF EXISTS (
-       SELECT 1 FROM Booking
-       WHERE Hotel_ID = NEW.Hotel_ID
-       AND RoomNumber = NEW.RoomNumber
-       AND NEW.StartDate < EndDate
-       AND NEW.EndDate > StartDate
-   ) THEN
-       RAISE EXCEPTION 'Booking dates overlap!';
+  IF EXISTS (
+      SELECT 1 FROM Booking
+      WHERE Hotel_ID = NEW.Hotel_ID
+      AND RoomNumber = NEW.RoomNumber
+      AND NEW.StartDate < EndDate
+      AND NEW.EndDate > StartDate
+  ) THEN
+      RAISE EXCEPTION 'Booking dates overlap!';
 END IF;
 RETURN NEW;
 END;

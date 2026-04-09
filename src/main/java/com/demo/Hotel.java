@@ -25,9 +25,7 @@ public class Hotel {
     public int getChainId() { return chainId; }
     public int getManagerSsn() { return managerSsn; }
 
-    // =========================
     // get all hotels
-    // =========================
     public static List<Hotel> getHotels() throws Exception {
         List<Hotel> hotels = new ArrayList<>();
         ConnectionDB db = new ConnectionDB();
@@ -57,9 +55,8 @@ public class Hotel {
         }
         return hotels;
     }
-    // =========================
+
     // get hotel by id
-    // =========================
     public static Hotel getHotelById(int hotelId) throws Exception {
         ConnectionDB db = new ConnectionDB();
         String sql = "SELECT hotel_id, address, rating, chain_id, manager_ssn FROM Hotel WHERE hotel_id = ?";
@@ -84,9 +81,8 @@ public class Hotel {
         }
         return null;
     }
-    // =========================
+
     // insert hotel
-    // =========================
     public static void insertHotel(String address, double rating, int chainId) throws Exception {
         ConnectionDB db = new ConnectionDB();
         String sql = "INSERT INTO Hotel (address, rating, chain_id) VALUES (?, ?, ?)";
@@ -104,9 +100,8 @@ public class Hotel {
             throw e;
         }
     }
-    // =========================
-    // update hotel
-    // =========================
+
+    // update hotle
     public static void updateHotel(int hotelId, String address, double rating, int chainId) throws Exception {
         ConnectionDB db = new ConnectionDB();
         String sql = "UPDATE Hotel SET address = ?, rating = ?, chain_id = ? WHERE hotel_id = ?";
@@ -124,9 +119,8 @@ public class Hotel {
             throw e;
         }
     }
-    // =========================
+
     // delete
-    // =========================
     public static void deleteHotel(int hotelId) throws Exception {
         ConnectionDB db = new ConnectionDB();
         String sql = "DELETE FROM Hotel WHERE hotel_id = ?";

@@ -72,7 +72,7 @@
 %>
 
 <h1>Check In a Customer</h1>
-<a class="back" href="employeeDashboard.jsp">← Back to Dashboard</a>
+<a class="back" href="employeeDashboard.jsp"> Back to Dashboard</a>
 
 <% if (message != null) { %><p class="success"><%= message %></p><% } %>
 <% if (error != null) { %><p class="error"><%= error %></p><% } %>
@@ -104,7 +104,7 @@
         <td>
             <form method="post" action="CheckInServlet">
                 <input type="hidden" name="bookId" value="<%= b.bookId %>">
-                <input type="hidden" name="employeeSSN" value="1"> <!-- remove later -->
+
                 <input type="hidden" name="employeeSSN" value="<%= session.getAttribute("ssn") %>">
                 <button type="submit" class="btn">Check In</button>
             </form>

@@ -44,7 +44,7 @@
 <body>
 
 <h1>Room Statistics</h1>
-<a class="back" href="employeeDashboard.jsp">← Back to Dashboard</a>
+<a class="back" href="employeeDashboard.jsp"> Back to Dashboard</a>
 
 <%
     ConnectionDB db = new ConnectionDB();

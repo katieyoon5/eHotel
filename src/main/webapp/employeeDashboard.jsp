@@ -64,8 +64,7 @@
 <body>
 
 <%
-    session.setAttribute("role", "employee"); //hardcoded remove once login is done
-    session.setAttribute("username", "alice"); //hardcoded remove once login is done
+
     String username = (String) session.getAttribute("username");
 %>
 

@@ -12,9 +12,7 @@ public class Booking {
     public int custId;
     public String customerName;
 
-    // =========================
-    // get all the bookings
-    // =========================
+    // get all the booking
     public static List<Booking> getAllBookings() throws Exception {
         List<Booking> bookings = new ArrayList<>();
         ConnectionDB db = new ConnectionDB();
@@ -46,9 +44,8 @@ public class Booking {
         }
         return bookings;
     }
-    // =========================
+
     // get booking id
-    // =========================
     public static Booking getBookingById(int bookId) throws Exception {
         ConnectionDB db = new ConnectionDB();
         try {
@@ -82,9 +79,8 @@ public class Booking {
         }
         return null;
     }
-    // =========================
+
     // booking to renting
-    // =========================
     public static void convertToRenting(int bookId, int employeeSSN) throws Exception {
         ConnectionDB db = new ConnectionDB();
         try {
@@ -129,9 +125,8 @@ public class Booking {
             db.close();
         }
     }
-    // =========================
+
     // insert bookinh
-    // =========================
     public static void insertBooking(String startDate, String endDate,
                                      int hotelId, int roomNumber, int custId) throws Exception {
         ConnectionDB db = new ConnectionDB();
@@ -153,9 +148,8 @@ public class Booking {
             db.close();
         }
     }
-    // =========================
+
     // delete booking
-    // =========================
     public static void deleteBooking(int bookId) throws Exception {
         ConnectionDB db = new ConnectionDB();
         try {

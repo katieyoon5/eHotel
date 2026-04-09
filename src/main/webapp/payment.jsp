@@ -58,7 +58,7 @@
 <body>
 
 <h1>Insert Payment</h1>
-<a class="back" href="employeeDashboard.jsp">← Back to Dashboard</a>
+<a class="back" href="employeeDashboard.jsp"> Back to Dashboard</a>
 
 <%
     String message = request.getParameter("message");

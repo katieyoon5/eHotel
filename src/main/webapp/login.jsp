@@ -80,14 +80,26 @@
 
             if (rs.next()) {
                 if ("customer".equals(user)){
-                    session.setAttribute("loggedInUser", request.getParameter("username")); // customer username
-                    session.setAttribute("role", "customer");
+                    int customerId = rs.getInt("cust_id");
+                    String usernameDB = rs.getString("Username");
+
+                    session.setAttribute("userID", customerId);
+                    session.setAttribute("username", usernameDB);
+                    session.setAttribute("user", "customer");
+
                     response.sendRedirect("customerDashboard.jsp");
+                    return;
                 }
                 else if ("employee".equals(user)){
-                    session.setAttribute("loggedInUser", request.getParameter("emp_username")); // employee username
-                    session.setAttribute("role", "employee");
+                    int empId = rs.getInt("ssn");
+                    String usernameDB = rs.getString("Username");
+
+                    session.setAttribute("userID", empId);
+                    session.setAttribute("username", usernameDB);
+                    session.setAttribute("user", "employee");
+
                     response.sendRedirect("employeeDashboard.jsp");
+                    return;
                     }
             } else {
             %>

@@ -85,14 +85,17 @@ CREATE TABLE Employee (
 -- room
 -- =========================
 CREATE TABLE Room (
-                      Hotel_ID INT,
-                      RoomNumber INT,
-                      Price INT CHECK (Price > 0),
-                      Capacity INT CHECK (Capacity > 0),
-                      View TEXT CHECK (View IN ('sea', 'mountain')),
- Extendable BOOLEAN,
- PRIMARY KEY (Hotel_ID, RoomNumber),
- FOREIGN KEY (Hotel_ID) REFERENCES Hotel(Hotel_ID)
+    Hotel_ID INT,
+    Chain_ID INT,
+    Available BOOLEAN DEFAULT TRUE,
+    RoomNumber INT,
+    Price INT CHECK (Price > 0),
+    Capacity INT CHECK (Capacity > 0),
+    View TEXT CHECK (View IN ('sea', 'mountain')),
+    Extendable BOOLEAN,
+    PRIMARY KEY (Hotel_ID, RoomNumber),
+    FOREIGN KEY (Hotel_ID) REFERENCES Hotel(Hotel_ID),
+    FOREIGN KEY (Chain_ID) REFERENCES Hotel_Chain(Chain_ID)
 );
 -- =========================
 -- multivalued attributes
@@ -249,19 +252,19 @@ INSERT INTO Customer (FirstName, MiddleName, LastName, Address, RegistrationDate
                                                                                       ('Hermione', NULL, 'Granger', '54 lakehouse', '2026-05-02'),
                                                                                       ('Harry', NULL, 'Potter', '77 disney land', '2026-12-05'),
                                                                                       ('Ron', NULL, 'Weasley', '45 jane doe', '2026-11-04');
-INSERT INTO Room (Hotel_ID, RoomNumber, Price, Capacity, View, Extendable) VALUES
-                                                                               -- Hotel 1 (5 rooms, different capacities)
-                                                                               (1, 101, 112, 2, 'sea', TRUE),
-                                                                               (1, 102, 120, 3, 'sea', FALSE),
-                                                                               (1, 103, 130, 4, 'sea', TRUE),
-                                                                               (1, 104, 140, 5, 'sea', FALSE),
-                                                                               (1, 105, 150, 6, 'sea', TRUE),
-                                                                               -- Hotel 2
-                                                                               (2, 201, 100, 2, 'mountain', TRUE),
-                                                                               (2, 202, 110, 3, 'mountain', FALSE),
-                                                                               (2, 203, 120, 4, 'mountain', TRUE),
-                                                                               (2, 204, 130, 5, 'mountain', FALSE),
-                                                                               (2, 205, 140, 6, 'mountain', TRUE);
+INSERT INTO Room (Hotel_ID, Chain_ID, Available, RoomNumber, Price, Capacity, View, Extendable) VALUES
+           -- Hotel 1 (5 rooms, different capacities)
+           (1, 1, TRUE, 101, 112, 2, 'sea', TRUE),
+           (1, 1,FALSE, 102, 120, 3, 'sea', FALSE),
+           (1,1, FALSE, 103, 130, 4, 'sea', TRUE),
+           (1, 1, FALSE,104, 140, 5, 'sea', FALSE),
+           (1,1, TRUE, 105, 150, 6, 'sea', TRUE),
+           -- Hotel 2
+           (2, 1, TRUE,201, 100, 2, 'mountain', TRUE),
+           (2, 1, TRUE,202, 110, 3, 'mountain', FALSE),
+           (2, 1, TRUE,203, 120, 4, 'mountain', TRUE),
+           (2, 1, TRUE,204, 130, 5, 'mountain', FALSE),
+           (2, 1, TRUE,205, 140, 6, 'mountain', TRUE);
 --Add more rooms later, amentinites, issues
 INSERT INTO Booking (StartDate, EndDate, Hotel_ID, RoomNumber, Cust_ID) VALUES
     ('2026-12-22', '2026-12-26', 1, 101, 1);

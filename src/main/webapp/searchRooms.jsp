@@ -1,5 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.util.List" %>
 <%@ page import="com.demo.Customer" %>
+<%@ page import="com.demo.Room" %>
 
 <!DOCTYPE html>
 <html>
@@ -31,12 +33,14 @@
             font-size: 14px;
         }
         .logout:hover { background: #c1d6f5; }
+
         .header {
             text-align: center;
             margin-bottom: 2.5rem;
         }
         .header h1 { font-size: 32px; color: #0e1130; margin: 0 0 6px; }
         .header p { font-size: 18px; color: #355099; margin: 0; }
+
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -44,6 +48,7 @@
             max-width: 1200px;
             margin: 0 auto;
         }
+
         .card {
             background: white;
             border-radius: 12px;
@@ -52,23 +57,44 @@
             text-decoration: none;
             display: block;
         }
+
         .card:hover { background: #c1d6f5; }
-        .card-title { color: #0e1130; font-weight: bold; margin: 0 0 8px; font-size: 18px; }
-        .card-sub { color: #355099; margin: 0; font-size: 14px; }
+
+        .card-title {
+            color: #0e1130;
+            font-weight: bold;
+            margin: 0 0 8px;
+            font-size: 18px;
+        }
+
+        .card-sub {
+            color: #355099;
+            margin: 0;
+            font-size: 14px;
+        }
     </style>
 </head>
+
 <body>
+
 <%
 Integer userID = (Integer) session.getAttribute("userID");
+
 if (userID == null) {
     response.sendRedirect("login.jsp");
     return;
 }
-Customer customer = null;
-customer = Customer.getCustomerById(userID);
-%>
 
-<p>UserID: <%= userID %></p>
+Customer customer = Customer.getCustomerById(userID);
+
+List<Room> rooms = null;
+
+try {
+    rooms = Room.getAvailableRooms();
+} catch (Exception e) {
+    out.println("Error loading rooms: " + e.getMessage());
+}
+%>
 
 <div class="topbar">
     <a href="logout.jsp" class="logout">Logout</a>
@@ -76,23 +102,38 @@ customer = Customer.getCustomerById(userID);
 
 <div class="header">
     <h1>Welcome, <%= customer.getFirstName() %>!</h1>
-    <p>Customer Dashboard</p>
+    <p>View Available Rooms</p>
 </div>
+
+<h2 style="text-align:center;">Available Rooms</h2>
 
 <div class="grid">
-    <a href="searchRooms.jsp" class="card">
-        <p class="card-title">Search available rooms</p>
-        <p class="card-sub">Search available rooms</p>
-    </a>
 
-    <a href="viewBookings.jsp" class="card">
-        <p class="card-title">View Bookings</p>
-        <p class="card-sub">view or delete past bookings</p>
-    </a>
-    <a href="views.jsp" class="card">
-        <p class="card-title">Room Statistics</p>
-        <p class="card-sub">View availability & capacity</p>
-    </a>
+<%
+if (rooms != null && !rooms.isEmpty()) {
+    for (Room r : rooms) {
+%>
+
+    <div class="card">
+        <p class="card-title">Room <%= r.getRoomNumber() %></p>
+        <p class="card-sub">Price: $<%= r.getPrice() %></p>
+        <p class="card-sub">Capacity: <%= r.getCapacity() %></p>
+        <p class="card-sub">View: <%= r.getView() %></p>
+        <p class="card-sub">Extendable: <%= r.getExtendable() %></p>
+    </div>
+
+<%
+    }
+} else {
+%>
+
+    <p style="text-align:center;">No rooms available right now.</p>
+
+<%
+}
+%>
+
 </div>
+
 </body>
 </html>

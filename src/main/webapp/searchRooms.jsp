@@ -85,7 +85,7 @@ Customer customer = Customer.getCustomerById(userID);
 List<Room> rooms = null;
 
 try {
-    rooms = Room.getRooms();
+    rooms = Room.getRooms("price");
 } catch (Exception e) {
     out.println("Error loading rooms: " + e.getMessage());
 }
@@ -104,6 +104,18 @@ try {
 
 <h2 style="text-align:center;">Available Rooms</h2>
 
+<form method="get" style="text-align:center; margin-bottom:20px;">
+    <select name="sortBy">
+        <option value="price">Price</option>
+        <option value="capacity">Capacity</option>
+        <option value="chain">Hotel Chain</option>
+        <option value="rating">Hotel Rating</option>
+        <option value="area">Area</option>
+    </select>
+    <button type="submit">Sort</button>
+</form>
+
+
 <div class="grid">
 
 <%
@@ -118,10 +130,10 @@ if (rooms != null && !rooms.isEmpty()) {
         <p class="card-sub">Price: $<%= r.getPrice() %></p>
         <p class="card-sub">Capacity: <%= r.getCapacity() %></p>
         <p class="card-sub">View: <%= r.getView() %></p>
-        <p class="card-sub">Extendable: </p>
-        <p class="card-sub">Rating: ></p>
-        <p class="card-sub">hotel:</p>
-        <p class="card-sub">chain:</p>
+        <p class="card-sub">Extendable: <%= r.getExtendable() %></p>
+        <p class="card-sub">Rating: <%= r.getHotelRating() %> ⭐</p>
+        <p class="card-sub">Hotel: <%= r.getHotelAddress() %></p>
+        <p class="card-sub">Chain: <%= r.getChainAddress() %></p>
     </a>
 
 <%

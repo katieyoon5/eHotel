@@ -36,6 +36,30 @@ List<String> blockedDates = Room.getBlockedDates(hotelId, roomNumber);
             background: #c1d6f5;
             padding: 2rem;
         }
+        .topbar {
+            display: flex;
+            justify-content: flex-end;
+            max-width: 1200px;
+            margin: 0 auto 1rem;
+        }
+        .logout {
+            background: white;
+            border: 1px solid #355099;
+            border-radius: 12px;
+            padding: 0.6rem 1.2rem;
+            text-decoration: none;
+            color: #0e1130;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .logout:hover { background: #c1d6f5; }
+        .header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+        .header h1 { font-size: 32px; color: #0e1130; margin: 0 0 6px; }
+        .header p { font-size: 18px; color: #355099; margin: 0; }
+        .back { display: block; text-align: center; margin-bottom: 1rem; color: #355099; }
         .form-box {
             background: white;
             padding: 2rem;
@@ -58,6 +82,16 @@ List<String> blockedDates = Room.getBlockedDates(hotelId, roomNumber);
 </head>
 
 <body>
+<div class="topbar">
+    <a href="logout.jsp" class="logout">Logout</a>
+</div>
+
+<div class="header">
+    <h1>Welcome, <%= customer.getFirstName() %>!</h1>
+    <p>Fill out the required form to book a room</p>
+</div>
+<a class="back" href="customerDashboard.jsp"> Back to Dashboard</a>
+
 
 <div class="form-box">
 

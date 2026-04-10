@@ -16,6 +16,10 @@ public class Room {
     private String view;
     private Boolean extendable;
 
+    public String hotelAddress;
+    public String chainAddress;
+    public float rating;
+
     public Room(int hotel_id, int chain_id, int roomNumber, float price, int capacity, String view, Boolean extendable){
         this.hotel_id = hotel_id;
         this.chain_id = chain_id;
@@ -33,20 +37,49 @@ public class Room {
     public String getView() { return view; }
     public Boolean getExtendable() { return extendable; }
 
+    public String getHotelAddress() { return hotelAddress; }
+    public String getChainAddress() { return chainAddress; }
+    public float getHotelRating() { return rating; }
     // =========================
     // get all rooms
     // =========================
-    public static List<Room> getRooms() throws Exception {
+    public static List<Room> getRooms(String sortBy) throws Exception {
         List<Room> rooms = new ArrayList<>();
         ConnectionDB db = new ConnectionDB();
-        String sql = "SELECT * FROM ROOM ";
+
+        String orderBy;
+
+        if ("price".equals(sortBy)) {
+            orderBy = "r.Price";
+        } else if ("capacity".equals(sortBy)) {
+            orderBy = "r.Capacity DESC";
+        } else if ("chain".equals(sortBy)) {
+            orderBy = "hc.Office_Address";
+        } else if ("rating".equals(sortBy)) {
+            orderBy = "h.Rating DESC";
+        } else if ("area".equals(sortBy)) {
+            orderBy = "h.Address";
+        } else {
+            orderBy = "r.Price";
+        }
+
+        String sql = """
+        SELECT r.*,
+               h.Address AS hotelAddress,
+               h.Rating AS rating,
+               hc.Office_Address AS chainAddress
+        FROM Room r
+        JOIN Hotel h ON r.Hotel_ID = h.Hotel_ID
+        JOIN Hotel_Chain hc ON h.Chain_ID = hc.Chain_ID
+        ORDER BY %s
+    """.formatted(orderBy);
 
         try (Connection con = db.getConnection();
              PreparedStatement stmt = con.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
-                rooms.add(new Room(
+                Room r = new Room(
                         rs.getInt("Hotel_ID"),
                         rs.getInt("Chain_ID"),
                         rs.getInt("RoomNumber"),
@@ -54,20 +87,22 @@ public class Room {
                         rs.getInt("Capacity"),
                         rs.getString("View"),
                         rs.getBoolean("Extendable")
-                ));
+                );
+
+                r.hotelAddress = rs.getString("hotelAddress");
+                r.chainAddress = rs.getString("chainAddress");
+                r.rating = rs.getFloat("rating");
+
+                rooms.add(r);
             }
-            if (rooms.isEmpty()) {
-                System.out.println("No rooms found in DB");
-            } else {
-                System.out.println("rooms loaded: " + rooms.size());
-            }
+
         } catch (Exception e) {
             System.out.println("DB ERROR: " + e.getMessage());
             throw e;
         }
+
         return rooms;
     }
-
     // =========================
     // get room by hotel id and room number
     // =========================

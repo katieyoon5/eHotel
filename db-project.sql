@@ -85,16 +85,16 @@ CREATE TABLE Employee (
 -- room
 -- =========================
 CREATE TABLE Room (
-    Hotel_ID INT,
-    Chain_ID INT,
-    RoomNumber INT,
-    Price INT CHECK (Price > 0),
-    Capacity INT CHECK (Capacity > 0),
-    View TEXT CHECK (View IN ('sea', 'mountain')),
-    Extendable BOOLEAN,
-    PRIMARY KEY (Hotel_ID, RoomNumber),
-    FOREIGN KEY (Hotel_ID) REFERENCES Hotel(Hotel_ID),
-    FOREIGN KEY (Chain_ID) REFERENCES Hotel_Chain(Chain_ID)
+                      Hotel_ID INT,
+                      Chain_ID INT,
+                      RoomNumber INT,
+                      Price INT CHECK (Price > 0),
+                      Capacity INT CHECK (Capacity > 0),
+                      View TEXT CHECK (View IN ('sea', 'mountain')),
+   Extendable BOOLEAN,
+   PRIMARY KEY (Hotel_ID, RoomNumber),
+   FOREIGN KEY (Hotel_ID) REFERENCES Hotel(Hotel_ID),
+   FOREIGN KEY (Chain_ID) REFERENCES Hotel_Chain(Chain_ID)
 );
 -- =========================
 -- multivalued attributes
@@ -252,18 +252,18 @@ INSERT INTO Customer (FirstName, MiddleName, LastName, Address, RegistrationDate
                                                                                       ('Harry', NULL, 'Potter', '77 disney land', '2026-12-05'),
                                                                                       ('Ron', NULL, 'Weasley', '45 jane doe', '2026-11-04');
 INSERT INTO Room (Hotel_ID, Chain_ID, RoomNumber, Price, Capacity, View, Extendable) VALUES
-           -- Hotel 1 (5 rooms, different capacities)
-           (1, 1, 101, 112, 2, 'sea', TRUE),
-           (1, 1, 102, 120, 3, 'sea', FALSE),
-           (1,1,  103, 130, 4, 'sea', TRUE),
-           (1, 1,104, 140, 5, 'sea', FALSE),
-           (1,1, 105, 150, 6, 'sea', TRUE),
-           -- Hotel 2
-           (2, 1,201, 100, 2, 'mountain', TRUE),
-           (2, 1,202, 110, 3, 'mountain', FALSE),
-           (2, 1,203, 120, 4, 'mountain', TRUE),
-           (2, 1,204, 130, 5, 'mountain', FALSE),
-           (2, 1,205, 140, 6, 'mountain', TRUE);
+                                                                                         -- Hotel 1 (5 rooms, different capacities)
+                                                                                         (1, 1, 101, 112, 2, 'sea', TRUE),
+                                                                                         (1, 1, 102, 120, 3, 'sea', FALSE),
+                                                                                         (1,1,  103, 130, 4, 'sea', TRUE),
+                                                                                         (1, 1,104, 140, 5, 'sea', FALSE),
+                                                                                         (1,1, 105, 150, 6, 'sea', TRUE),
+                                                                                         -- Hotel 2
+                                                                                         (2, 1,201, 100, 2, 'mountain', TRUE),
+                                                                                         (2, 1,202, 110, 3, 'mountain', FALSE),
+                                                                                         (2, 1,203, 120, 4, 'mountain', TRUE),
+                                                                                         (2, 1,204, 130, 5, 'mountain', FALSE),
+                                                                                         (2, 1,205, 140, 6, 'mountain', TRUE);
 --Add more rooms later, amentinites, issues
 INSERT INTO Booking (StartDate, EndDate, Hotel_ID, RoomNumber, Cust_ID) VALUES
     ('2026-12-22', '2026-12-26', 1, 101, 1);
@@ -335,14 +335,14 @@ CREATE TRIGGER renting_archive_trigger
 CREATE OR REPLACE FUNCTION prevent_overlap_booking()
 RETURNS TRIGGER AS $$
 BEGIN
-  IF EXISTS (
-      SELECT 1 FROM Booking
-      WHERE Hotel_ID = NEW.Hotel_ID
-      AND RoomNumber = NEW.RoomNumber
-      AND NEW.StartDate < EndDate
-      AND NEW.EndDate > StartDate
-  ) THEN
-      RAISE EXCEPTION 'Booking dates overlap!';
+ IF EXISTS (
+     SELECT 1 FROM Booking
+     WHERE Hotel_ID = NEW.Hotel_ID
+     AND RoomNumber = NEW.RoomNumber
+     AND NEW.StartDate < EndDate
+     AND NEW.EndDate > StartDate
+ ) THEN
+     RAISE EXCEPTION 'Booking dates overlap!';
 END IF;
 RETURN NEW;
 END;
@@ -374,3 +374,4 @@ GROUP BY Hotel_ID;
 SELECT Hotel_ID, AVG(Price) AS avg_price
 FROM Room
 GROUP BY Hotel_ID;
+

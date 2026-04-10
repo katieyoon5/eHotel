@@ -5,12 +5,40 @@ import java.util.List;
 
 public class Booking {
     public int bookId;
-    public String startDate;
-    public String endDate;
+    public Date startDate;
+    public Date endDate;
     public int hotelId;
     public int roomNumber;
     public int custId;
     public String customerName;
+
+    public String hotelAddress;
+    public String chainAddress;
+
+    public Booking() {}
+
+    public Booking(int bookId, Date startDate, Date endDate,
+                   int hotelId, int roomNumber, int custId,
+                   String hotelAddress, String chainAddress) {
+        this.bookId = bookId;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.hotelId = hotelId;
+        this.roomNumber = roomNumber;
+        this.custId = custId;
+        this.hotelAddress = hotelAddress;
+        this.chainAddress = chainAddress;
+    }
+
+    public int getBookId() { return bookId; }
+    public Date getStartDate() { return startDate; }
+    public Date getEndDate() { return endDate; }
+    public int getHotelId() { return hotelId; }
+    public int getRoomNumber() { return roomNumber; }
+    public int getCustId() { return custId; }
+
+    public String getHotelAddress() { return hotelAddress; }
+    public String getChainAddress() { return chainAddress; }
 
     // get all the booking
     public static List<Booking> getAllBookings() throws Exception {
@@ -29,8 +57,8 @@ public class Booking {
             while (rs.next()) {
                 Booking b = new Booking();
                 b.bookId = rs.getInt("Book_ID");
-                b.startDate = rs.getString("StartDate");
-                b.endDate = rs.getString("EndDate");
+                b.startDate = rs.getDate("StartDate");
+                b.endDate = rs.getDate("EndDate");
                 b.hotelId = rs.getInt("Hotel_ID");
                 b.roomNumber = rs.getInt("RoomNumber");
                 b.custId = rs.getInt("Cust_ID");
@@ -62,8 +90,8 @@ public class Booking {
             if (rs.next()) {
                 Booking b = new Booking();
                 b.bookId = rs.getInt("Book_ID");
-                b.startDate = rs.getString("StartDate");
-                b.endDate = rs.getString("EndDate");
+                b.startDate = rs.getDate("StartDate");
+                b.endDate = rs.getDate("EndDate");
                 b.hotelId = rs.getInt("Hotel_ID");
                 b.roomNumber = rs.getInt("RoomNumber");
                 b.custId = rs.getInt("Cust_ID");
@@ -80,6 +108,51 @@ public class Booking {
         return null;
     }
 
+    //get booking by customer id
+    public static List<Booking> getBookingByCustId(int custId) throws Exception {
+        List<Booking> bookings = new ArrayList<>();
+        ConnectionDB db = new ConnectionDB();
+
+        try {
+            Connection con = db.getConnection();
+
+            String sql = """
+                SELECT b.*,
+                       h.address AS hotelAddress,
+                       hc.office_address AS chainAddress
+                FROM booking b
+                LEFT JOIN hotel h ON b.hotel_id = h.hotel_id
+                LEFT JOIN hotel_chain hc ON h.chain_id = hc.chain_id
+                WHERE b.cust_id = ?
+            """;
+
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setInt(1, custId);
+
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Booking b = new Booking();
+                b.bookId = rs.getInt("Book_ID");
+                b.startDate = rs.getDate("StartDate");
+                b.endDate = rs.getDate("EndDate");
+                b.hotelId = rs.getInt("Hotel_ID");
+                b.roomNumber = rs.getInt("RoomNumber");
+                b.custId = rs.getInt("Cust_ID");
+
+                b.hotelAddress = rs.getString("hotelAddress");
+                b.chainAddress = rs.getString("chainAddress");
+                bookings.add(b);
+            }
+
+            rs.close();
+            ps.close();
+        } finally {
+            db.close();
+        }
+
+        return bookings;
+    }
     // booking to renting
     public static void convertToRenting(int bookId, int employeeSSN) throws Exception {
         ConnectionDB db = new ConnectionDB();
@@ -127,7 +200,7 @@ public class Booking {
     }
 
     // insert bookinh
-    public static void insertBooking(String startDate, String endDate,
+    public static void insertBooking(Date startDate, Date endDate,
                                      int hotelId, int roomNumber, int custId) throws Exception {
         ConnectionDB db = new ConnectionDB();
         try {
@@ -137,8 +210,8 @@ public class Booking {
                 VALUES (?, ?, ?, ?, ?)
             """;
             PreparedStatement ps = con.prepareStatement(sql);
-            ps.setDate(1, Date.valueOf(startDate));
-            ps.setDate(2, Date.valueOf(endDate));
+            ps.setDate(1, startDate);
+            ps.setDate(2, endDate);
             ps.setInt(3, hotelId);
             ps.setInt(4, roomNumber);
             ps.setInt(5, custId);

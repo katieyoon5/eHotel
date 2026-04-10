@@ -64,7 +64,11 @@
 <body>
 
 <%
-
+    String user = (String) session.getAttribute("user");
+    if (user == null || !user.equals("employee")) {
+        response.sendRedirect("index.jsp");
+        return;
+    }
     String username = (String) session.getAttribute("username");
 %>
 
@@ -111,5 +115,6 @@
         <p class="card-sub">View availability & capacity</p>
     </a>
 </div>
+
 </body>
 </html>

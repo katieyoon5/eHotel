@@ -1,10 +1,3 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: arielsyal
-  Date: 2026-04-06
-  Time: 10:10 p.m.
-  To change this template use File | Settings | File Templates.
---%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List" %>
 <%@ page import="com.demo.Booking" %>
@@ -38,9 +31,7 @@
             text-align: left;
         }
         td { padding: 12px; border-bottom: 1px solid #c1d6f5; color: #0e1130; }
-        tr:hover {
-            background: #c1d6f5;
-        }
+        tr:hover { background: #c1d6f5; }
         .btn {
             background: #355099;
             color: white;
@@ -49,7 +40,7 @@
             border-radius: 8px;
             cursor: pointer;
         }
-        .btn:hover { background: #355099; }
+        .btn:hover { background: #1e3a7a; }
         .success { color: green; text-align: center; margin-bottom: 1rem; }
         .error { color: red; text-align: center; margin-bottom: 1rem; }
     </style>
@@ -57,8 +48,14 @@
 <body>
 
 <%
+    String user = (String) session.getAttribute("user");
+    if (user == null || !user.equals("employee")) {
+        response.sendRedirect("index.jsp");
+        return;
+    }
+
     String username = (String) session.getAttribute("username");
-    if (username == null) username = "alice"; // remove later
+    Integer userID = (Integer) session.getAttribute("userID");
 
     String message = request.getParameter("message");
     String error = request.getParameter("error");
@@ -104,8 +101,7 @@
         <td>
             <form method="post" action="CheckInServlet">
                 <input type="hidden" name="bookId" value="<%= b.bookId %>">
-
-                <input type="hidden" name="employeeSSN" value="<%= session.getAttribute("ssn") %>">
+                <input type="hidden" name="employeeSSN" value="<%= userID %>">
                 <button type="submit" class="btn">Check In</button>
             </form>
         </td>

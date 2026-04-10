@@ -180,5 +180,149 @@ public class Room {
 
         return blocked;
     }
+
+    // get all rooms (for manage page)
+    public static List<Room> getAllRooms() throws Exception {
+        List<Room> rooms = new ArrayList<>();
+        ConnectionDB db = new ConnectionDB();
+        String sql = "SELECT r.*, h.Address AS hotelAddress, h.Rating AS rating, hc.Office_Address AS chainAddress " +
+                "FROM Room r JOIN Hotel h ON r.Hotel_ID = h.Hotel_ID JOIN Hotel_Chain hc ON h.Chain_ID = hc.Chain_ID";
+
+        try (Connection con = db.getConnection();
+             PreparedStatement stmt = con.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                Room r = new Room(
+                        rs.getInt("Hotel_ID"),
+                        rs.getInt("Chain_ID"),
+                        rs.getInt("RoomNumber"),
+                        rs.getFloat("Price"),
+                        rs.getInt("Capacity"),
+                        rs.getString("View"),
+                        rs.getBoolean("Extendable")
+                );
+                r.hotelAddress = rs.getString("hotelAddress");
+                r.chainAddress = rs.getString("chainAddress");
+                r.rating = rs.getFloat("rating");
+                rooms.add(r);
+            }
+        } catch (Exception e) {
+            System.out.println("DB ERROR: " + e.getMessage());
+            throw e;
+        }
+        return rooms;
+    }
+
+    // get available rooms (for direct renting)
+    public static List<Room> getAvailableRooms() throws Exception {
+        List<Room> rooms = new ArrayList<>();
+        ConnectionDB db = new ConnectionDB();
+        String sql = """
+        SELECT r.*, h.Address AS hotelAddress, h.Rating AS rating, hc.Office_Address AS chainAddress
+        FROM Room r
+        JOIN Hotel h ON r.Hotel_ID = h.Hotel_ID
+        JOIN Hotel_Chain hc ON h.Chain_ID = hc.Chain_ID
+        WHERE NOT EXISTS (
+            SELECT 1 FROM Renting rt
+            WHERE rt.Hotel_ID = r.Hotel_ID AND rt.RoomNumber = r.RoomNumber
+        )
+    """;
+
+        try (Connection con = db.getConnection();
+             PreparedStatement stmt = con.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                Room r = new Room(
+                        rs.getInt("Hotel_ID"),
+                        rs.getInt("Chain_ID"),
+                        rs.getInt("RoomNumber"),
+                        rs.getFloat("Price"),
+                        rs.getInt("Capacity"),
+                        rs.getString("View"),
+                        rs.getBoolean("Extendable")
+                );
+                r.hotelAddress = rs.getString("hotelAddress");
+                r.chainAddress = rs.getString("chainAddress");
+                r.rating = rs.getFloat("rating");
+                rooms.add(r);
+            }
+        } catch (Exception e) {
+            System.out.println("DB ERROR: " + e.getMessage());
+            throw e;
+        }
+        return rooms;
+    }
+
+    // get room by id (for edit form)
+    public static Room getRoomById(int hotelId, int roomNumber) throws Exception {
+        return getRoomByHotelAndNumber(hotelId, roomNumber);
+    }
+
+    // insert room
+    public static void insertRoom(int hotelId, int chainId, int roomNumber,
+                                  float price, int capacity, String view, boolean extendable) throws Exception {
+        ConnectionDB db = new ConnectionDB();
+        String sql = "INSERT INTO Room (Hotel_ID, Chain_ID, RoomNumber, Price, Capacity, View, Extendable) VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+        try (Connection con = db.getConnection();
+             PreparedStatement stmt = con.prepareStatement(sql)) {
+
+            stmt.setInt(1, hotelId);
+            stmt.setInt(2, chainId);
+            stmt.setInt(3, roomNumber);
+            stmt.setFloat(4, price);
+            stmt.setInt(5, capacity);
+            stmt.setString(6, view);
+            stmt.setBoolean(7, extendable);
+            stmt.executeUpdate();
+
+        } catch (Exception e) {
+            System.out.println("DB ERROR: " + e.getMessage());
+            throw e;
+        }
+    }
+
+    // update room
+    public static void updateRoom(int hotelId, int roomNumber, float price, int capacity,
+                                  String view, boolean extendable) throws Exception {
+        ConnectionDB db = new ConnectionDB();
+        String sql = "UPDATE Room SET Price=?, Capacity=?, View=?, Extendable=? WHERE Hotel_ID=? AND RoomNumber=?";
+
+        try (Connection con = db.getConnection();
+             PreparedStatement stmt = con.prepareStatement(sql)) {
+
+            stmt.setFloat(1, price);
+            stmt.setInt(2, capacity);
+            stmt.setString(3, view);
+            stmt.setBoolean(4, extendable);
+            stmt.setInt(5, hotelId);
+            stmt.setInt(6, roomNumber);
+            stmt.executeUpdate();
+
+        } catch (Exception e) {
+            System.out.println("DB ERROR: " + e.getMessage());
+            throw e;
+        }
+    }
+
+    // delete room
+    public static void deleteRoom(int hotelId, int roomNumber) throws Exception {
+        ConnectionDB db = new ConnectionDB();
+        String sql = "DELETE FROM Room WHERE Hotel_ID = ? AND RoomNumber = ?";
+
+        try (Connection con = db.getConnection();
+             PreparedStatement stmt = con.prepareStatement(sql)) {
+
+            stmt.setInt(1, hotelId);
+            stmt.setInt(2, roomNumber);
+            stmt.executeUpdate();
+
+        } catch (Exception e) {
+            System.out.println("DB ERROR: " + e.getMessage());
+            throw e;
+        }
+    }
 }
 

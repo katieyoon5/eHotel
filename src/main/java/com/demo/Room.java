@@ -310,15 +310,168 @@ public class Room {
     // delete room
     public static void deleteRoom(int hotelId, int roomNumber) throws Exception {
         ConnectionDB db = new ConnectionDB();
-        String sql = "DELETE FROM Room WHERE Hotel_ID = ? AND RoomNumber = ?";
+        try (Connection con = db.getConnection()) {
 
-        try (Connection con = db.getConnection();
-             PreparedStatement stmt = con.prepareStatement(sql)) {
+            // delete amenities first
+            String deleteAmenities = "DELETE FROM RoomAmenities WHERE Hotel_ID = ? AND RoomNumber = ?";
+            PreparedStatement ps1 = con.prepareStatement(deleteAmenities);
+            ps1.setInt(1, hotelId);
+            ps1.setInt(2, roomNumber);
+            ps1.executeUpdate();
+            ps1.close();
 
+            // delete issues
+            String deleteIssues = "DELETE FROM RoomIssues WHERE Hotel_ID = ? AND RoomNumber = ?";
+            PreparedStatement ps2 = con.prepareStatement(deleteIssues);
+            ps2.setInt(1, hotelId);
+            ps2.setInt(2, roomNumber);
+            ps2.executeUpdate();
+            ps2.close();
+
+            // delete payments linked to rentings of this room
+            String deletePayments = """
+            DELETE FROM Payment WHERE Rent_ID IN (
+                SELECT Rent_ID FROM Renting WHERE Hotel_ID = ? AND RoomNumber = ?
+            )
+        """;
+            PreparedStatement ps3 = con.prepareStatement(deletePayments);
+            ps3.setInt(1, hotelId);
+            ps3.setInt(2, roomNumber);
+            ps3.executeUpdate();
+            ps3.close();
+
+            // delete rentings
+            String deleteRentings = "DELETE FROM Renting WHERE Hotel_ID = ? AND RoomNumber = ?";
+            PreparedStatement ps4 = con.prepareStatement(deleteRentings);
+            ps4.setInt(1, hotelId);
+            ps4.setInt(2, roomNumber);
+            ps4.executeUpdate();
+            ps4.close();
+
+            // delete bookings
+            String deleteBookings = "DELETE FROM Booking WHERE Hotel_ID = ? AND RoomNumber = ?";
+            PreparedStatement ps5 = con.prepareStatement(deleteBookings);
+            ps5.setInt(1, hotelId);
+            ps5.setInt(2, roomNumber);
+            ps5.executeUpdate();
+            ps5.close();
+
+            // now delete the room
+            String sql = "DELETE FROM Room WHERE Hotel_ID = ? AND RoomNumber = ?";
+            PreparedStatement ps6 = con.prepareStatement(sql);
+            ps6.setInt(1, hotelId);
+            ps6.setInt(2, roomNumber);
+            ps6.executeUpdate();
+            ps6.close();
+
+        } catch (Exception e) {
+            System.out.println("DB ERROR: " + e.getMessage());
+            throw e;
+        }
+    }
+    // get amenities for room
+    public static List<String> getAmenitiesForRoom(int hotelId, int roomNumber) throws Exception {
+        List<String> amenities = new ArrayList<>();
+        ConnectionDB db = new ConnectionDB();
+        try (Connection con = db.getConnection()) {
+            String sql = "SELECT Amenity FROM RoomAmenities WHERE Hotel_ID = ? AND RoomNumber = ?";
+            PreparedStatement stmt = con.prepareStatement(sql);
             stmt.setInt(1, hotelId);
             stmt.setInt(2, roomNumber);
-            stmt.executeUpdate();
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) amenities.add(rs.getString("Amenity"));
+            rs.close();
+            stmt.close();
+        } catch (Exception e) {
+            System.out.println("DB ERROR: " + e.getMessage());
+            throw e;
+        }
+        return amenities;
+    }
 
+    // add amenity to room
+    public static void addAmenity(int hotelId, int roomNumber, String amenity) throws Exception {
+        ConnectionDB db = new ConnectionDB();
+        try (Connection con = db.getConnection()) {
+            String sql = "INSERT INTO RoomAmenities (Hotel_ID, RoomNumber, Amenity) VALUES (?, ?, ?)";
+            PreparedStatement stmt = con.prepareStatement(sql);
+            stmt.setInt(1, hotelId);
+            stmt.setInt(2, roomNumber);
+            stmt.setString(3, amenity);
+            stmt.executeUpdate();
+            stmt.close();
+        } catch (Exception e) {
+            System.out.println("DB ERROR: " + e.getMessage());
+            throw e;
+        }
+    }
+
+
+    // delete amenity from room
+    public static void deleteAmenity(int hotelId, int roomNumber, String amenity) throws Exception {
+        ConnectionDB db = new ConnectionDB();
+        try (Connection con = db.getConnection()) {
+            String sql = "DELETE FROM RoomAmenities WHERE Hotel_ID = ? AND RoomNumber = ? AND Amenity = ?";
+            PreparedStatement stmt = con.prepareStatement(sql);
+            stmt.setInt(1, hotelId);
+            stmt.setInt(2, roomNumber);
+            stmt.setString(3, amenity);
+            stmt.executeUpdate();
+            stmt.close();
+        } catch (Exception e) {
+            System.out.println("DB ERROR: " + e.getMessage());
+            throw e;
+        }
+    }
+
+    // get issues for room
+    public static List<String> getIssuesForRoom(int hotelId, int roomNumber) throws Exception {
+        List<String> issues = new ArrayList<>();
+        ConnectionDB db = new ConnectionDB();
+        try (Connection con = db.getConnection()) {
+            String sql = "SELECT Issue FROM RoomIssues WHERE Hotel_ID = ? AND RoomNumber = ?";
+            PreparedStatement stmt = con.prepareStatement(sql);
+            stmt.setInt(1, hotelId);
+            stmt.setInt(2, roomNumber);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) issues.add(rs.getString("Issue"));
+            rs.close();
+            stmt.close();
+        } catch (Exception e) {
+            System.out.println("DB ERROR: " + e.getMessage());
+            throw e;
+        }
+        return issues;
+    }
+
+    // add issue to room
+    public static void addIssue(int hotelId, int roomNumber, String issue) throws Exception {
+        ConnectionDB db = new ConnectionDB();
+        try (Connection con = db.getConnection()) {
+            String sql = "INSERT INTO RoomIssues (Hotel_ID, RoomNumber, Issue) VALUES (?, ?, ?)";
+            PreparedStatement stmt = con.prepareStatement(sql);
+            stmt.setInt(1, hotelId);
+            stmt.setInt(2, roomNumber);
+            stmt.setString(3, issue);
+            stmt.executeUpdate();
+            stmt.close();
+        } catch (Exception e) {
+            System.out.println("DB ERROR: " + e.getMessage());
+            throw e;
+        }
+    }
+
+    // delete issue from room
+    public static void deleteIssue(int hotelId, int roomNumber, String issue) throws Exception {
+        ConnectionDB db = new ConnectionDB();
+        try (Connection con = db.getConnection()) {
+            String sql = "DELETE FROM RoomIssues WHERE Hotel_ID = ? AND RoomNumber = ? AND Issue = ?";
+            PreparedStatement stmt = con.prepareStatement(sql);
+            stmt.setInt(1, hotelId);
+            stmt.setInt(2, roomNumber);
+            stmt.setString(3, issue);
+            stmt.executeUpdate();
+            stmt.close();
         } catch (Exception e) {
             System.out.println("DB ERROR: " + e.getMessage());
             throw e;

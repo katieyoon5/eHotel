@@ -16,7 +16,7 @@
     body {
       min-height: 100vh;
       background: #c1d6f5;
-      font-family: Arial;
+      font-family: Arial, sans-serif;
       padding: 2rem;
       margin: 0;
     }
@@ -49,8 +49,18 @@
       cursor: pointer;
       width: 100%;
       font-size: 16px;
+      margin-bottom: 0.5rem;
     }
-    .btn:hover { background: #355099; }
+    .btn:hover { background: #1e3a7a; }
+    .btn-small {
+      background: #355099;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+    }
     .btn-delete {
       background: #355099;
       color: white;
@@ -69,7 +79,7 @@
     }
     table {
       width: 100%;
-      max-width: 1100px;
+      max-width: 1200px;
       margin: 0 auto 2rem auto;
       border-collapse: collapse;
       background: white;
@@ -82,15 +92,48 @@
       padding: 12px;
       text-align: left;
     }
-    td { padding: 12px; border-bottom: 1px solid #c1d6f5; color: #0e1130; }
-    tr:hover { background: #c1d6f5; }
+    td { padding: 12px; border-bottom: 1px solid #c1d6f5; color: #0e1130; vertical-align: top; }
+    tr:hover { background: #eef4ff; }
     .success { color: green; text-align: center; margin-bottom: 1rem; }
     .error { color: red; text-align: center; margin-bottom: 1rem; }
+    .tag {
+      display: inline-block;
+      background: #c1d6f5;
+      color: #0e1130;
+      border-radius: 8px;
+      padding: 3px 8px;
+      font-size: 12px;
+      margin: 2px;
+    }
+    .tag-issue {
+      display: inline-block;
+      background: #c1d6f5;
+      color: #355099;
+      border-radius: 8px;
+      padding: 3px 8px;
+      font-size: 12px;
+      margin: 2px;
+    }
+    .multival-form {
+      display: flex;
+      gap: 6px;
+      margin-top: 6px;
+    }
+    .multival-form input {
+      margin-bottom: 0;
+      flex: 1;
+    }
   </style>
 </head>
 <body>
 
 <%
+  String user = (String) session.getAttribute("user");
+  if (user == null || !user.equals("employee")) {
+    response.sendRedirect("index.jsp");
+    return;
+  }
+
   String message = request.getParameter("message");
   String error = request.getParameter("error");
   String editHotelId = request.getParameter("editHotelId");
@@ -119,6 +162,7 @@
 <% if (message != null) { %><p class="success"><%= message %></p><% } %>
 <% if (error != null) { %><p class="error"><%= error %></p><% } %>
 
+<!-- ADD / EDIT FORM -->
 <div class="card">
   <% if (editRoom != null) { %>
   <h2>Edit Room <%= editRoom.getRoomNumber() %> (Hotel <%= editRoom.getHotelId() %>)</h2>
@@ -147,6 +191,55 @@
 
     <button type="submit" class="btn">Update Room</button>
   </form>
+
+  <!-- AMENITIES -->
+  <h2>Amenities</h2>
+  <%
+    List<String> amenities = Room.getAmenitiesForRoom(editRoom.getHotelId(), editRoom.getRoomNumber());
+    for (String amenity : amenities) {
+  %>
+  <span class="tag"><%= amenity %></span>
+  <form method="post" action="RoomServlet" style="display:inline;">
+    <input type="hidden" name="action" value="deleteAmenity">
+    <input type="hidden" name="hotelId" value="<%= editRoom.getHotelId() %>">
+    <input type="hidden" name="roomNumber" value="<%= editRoom.getRoomNumber() %>">
+    <input type="hidden" name="amenity" value="<%= amenity %>">
+    <button type="submit" class="btn-delete" style="padding:2px 8px; font-size:11px;">x</button>
+  </form>
+  <% } %>
+  <% if (amenities.isEmpty()) { %><p style="color:#aaa; font-size:13px;">No amenities yet</p><% } %>
+  <form method="post" action="RoomServlet" class="multival-form">
+    <input type="hidden" name="action" value="addAmenity">
+    <input type="hidden" name="hotelId" value="<%= editRoom.getHotelId() %>">
+    <input type="hidden" name="roomNumber" value="<%= editRoom.getRoomNumber() %>">
+    <input type="text" name="amenity" />
+    <button type="submit" class="btn-small">Add</button>
+  </form>
+
+  <!-- ISSUES -->
+  <h2>Issues</h2>
+  <%
+    List<String> issues = Room.getIssuesForRoom(editRoom.getHotelId(), editRoom.getRoomNumber());
+    for (String issue : issues) {
+  %>
+  <span class="tag-issue"><%= issue %></span>
+  <form method="post" action="RoomServlet" style="display:inline;">
+    <input type="hidden" name="action" value="deleteIssue">
+    <input type="hidden" name="hotelId" value="<%= editRoom.getHotelId() %>">
+    <input type="hidden" name="roomNumber" value="<%= editRoom.getRoomNumber() %>">
+    <input type="hidden" name="issue" value="<%= issue %>">
+    <button type="submit" class="btn-delete" style="padding:2px 8px; font-size:11px;">x</button>
+  </form>
+  <% } %>
+  <% if (issues.isEmpty()) { %><p style="color:#aaa; font-size:13px;">No issues reported</p><% } %>
+  <form method="post" action="RoomServlet" class="multival-form">
+    <input type="hidden" name="action" value="addIssue">
+    <input type="hidden" name="hotelId" value="<%= editRoom.getHotelId() %>">
+    <input type="hidden" name="roomNumber" value="<%= editRoom.getRoomNumber() %>">
+    <input type="text" name="issue" />
+    <button type="submit" class="btn-small">Add</button>
+  </form>
+
   <% } else { %>
   <h2>Add New Room</h2>
   <form method="post" action="RoomServlet">
@@ -184,6 +277,7 @@
   <% } %>
 </div>
 
+<!-- ROOMS TABLE -->
 <h2>All Rooms</h2>
 <table>
   <thead>
@@ -195,12 +289,17 @@
     <th>Capacity</th>
     <th>View</th>
     <th>Extendable</th>
+    <th>Amenities</th>
+    <th>Issues</th>
     <th>Edit</th>
     <th>Delete</th>
   </tr>
   </thead>
   <tbody>
-  <% if (rooms != null) { for (Room r : rooms) { %>
+  <% if (rooms != null) { for (Room r : rooms) {
+    List<String> rAmenities = Room.getAmenitiesForRoom(r.getHotelId(), r.getRoomNumber());
+    List<String> rIssues = Room.getIssuesForRoom(r.getHotelId(), r.getRoomNumber());
+  %>
   <tr>
     <td><%= r.getHotelId() %></td>
     <td><%= r.getRoomNumber() %></td>
@@ -209,6 +308,14 @@
     <td><%= r.getCapacity() %></td>
     <td><%= r.getView() %></td>
     <td><%= r.getExtendable() ? "Yes" : "No" %></td>
+    <td>
+      <% if (rAmenities.isEmpty()) { %><span style="color:#aaa;">none</span>
+      <% } else { for (String a : rAmenities) { %><span class="tag"><%= a %></span><% } } %>
+    </td>
+    <td>
+      <% if (rIssues.isEmpty()) { %><span style="color:#aaa;">none</span>
+      <% } else { for (String i : rIssues) { %><span class="tag-issue"><%= i %></span><% } } %>
+    </td>
     <td>
       <a href="manageRooms.jsp?editHotelId=<%= r.getHotelId() %>&editRoomNumber=<%= r.getRoomNumber() %>">
         <button class="btn-edit">Edit</button>

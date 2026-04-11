@@ -43,7 +43,7 @@
         .header p { font-size: 18px; color: #355099; margin: 0; }
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            grid-template-columns: repeat(3,1fr);
             gap: 20px;
             max-width: 1200px;
             margin: 0 auto;
@@ -114,6 +114,11 @@
         <p class="card-title">Room Statistics</p>
         <p class="card-sub">View availability & capacity</p>
     </a>
+    <a href="manageHotelChains.jsp" class="card">
+        <p class="card-title">Manage Hotel Chains</p>
+        <p class="card-sub">Add, edit, remove chains</p>
+    </a>
+
 </div>
 
 </body>

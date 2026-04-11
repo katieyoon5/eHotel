@@ -34,13 +34,41 @@ public class RoomServlet extends HttpServlet {
                 String view = request.getParameter("view");
                 boolean extendable = Boolean.parseBoolean(request.getParameter("extendable"));
                 Room.updateRoom(hotelId, roomNumber, price, capacity, view, extendable);
-                response.sendRedirect("manageRooms.jsp?message=Room+updated+successfully!");
+                response.sendRedirect("manageRooms.jsp?editHotelId=" + hotelId + "&editRoomNumber=" + roomNumber + "&message=Room+updated+successfully!");
 
             } else if (action.equals("delete")) {
                 int hotelId = Integer.parseInt(request.getParameter("hotelId"));
                 int roomNumber = Integer.parseInt(request.getParameter("roomNumber"));
                 Room.deleteRoom(hotelId, roomNumber);
                 response.sendRedirect("manageRooms.jsp?message=Room+deleted+successfully!");
+
+            } else if (action.equals("addAmenity")) {
+                int hotelId = Integer.parseInt(request.getParameter("hotelId"));
+                int roomNumber = Integer.parseInt(request.getParameter("roomNumber"));
+                String amenity = request.getParameter("amenity");
+                Room.addAmenity(hotelId, roomNumber, amenity);
+                response.sendRedirect("manageRooms.jsp?editHotelId=" + hotelId + "&editRoomNumber=" + roomNumber + "&message=Amenity+added!");
+
+            } else if (action.equals("deleteAmenity")) {
+                int hotelId = Integer.parseInt(request.getParameter("hotelId"));
+                int roomNumber = Integer.parseInt(request.getParameter("roomNumber"));
+                String amenity = request.getParameter("amenity");
+                Room.deleteAmenity(hotelId, roomNumber, amenity);
+                response.sendRedirect("manageRooms.jsp?editHotelId=" + hotelId + "&editRoomNumber=" + roomNumber + "&message=Amenity+deleted!");
+
+            } else if (action.equals("addIssue")) {
+                int hotelId = Integer.parseInt(request.getParameter("hotelId"));
+                int roomNumber = Integer.parseInt(request.getParameter("roomNumber"));
+                String issue = request.getParameter("issue");
+                Room.addIssue(hotelId, roomNumber, issue);
+                response.sendRedirect("manageRooms.jsp?editHotelId=" + hotelId + "&editRoomNumber=" + roomNumber + "&message=Issue+added!");
+
+            } else if (action.equals("deleteIssue")) {
+                int hotelId = Integer.parseInt(request.getParameter("hotelId"));
+                int roomNumber = Integer.parseInt(request.getParameter("roomNumber"));
+                String issue = request.getParameter("issue");
+                Room.deleteIssue(hotelId, roomNumber, issue);
+                response.sendRedirect("manageRooms.jsp?editHotelId=" + hotelId + "&editRoomNumber=" + roomNumber + "&message=Issue+deleted!");
             }
 
         } catch (Exception e) {

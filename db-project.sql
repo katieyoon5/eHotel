@@ -1,6 +1,7 @@
 -- =========================
 -- drop tables
 -- =========================
+DROP TABLE IF EXISTS HotelEmail CASCADE;
 DROP TABLE IF EXISTS Payment CASCADE;
 DROP TABLE IF EXISTS RoomAmenities CASCADE;
 DROP TABLE IF EXISTS RoomIssues CASCADE;
@@ -51,6 +52,12 @@ CREATE TABLE HotelPhone (
                             Hotel_ID INT,
                             Phone TEXT,
                             PRIMARY KEY (Hotel_ID, Phone),
+                            FOREIGN KEY (Hotel_ID) REFERENCES Hotel(Hotel_ID)
+);
+CREATE TABLE HotelEmail (
+                            Hotel_ID INT,
+                            Email TEXT,
+                            PRIMARY KEY (Hotel_ID, Email),
                             FOREIGN KEY (Hotel_ID) REFERENCES Hotel(Hotel_ID)
 );
 -- =========================
@@ -351,6 +358,30 @@ CREATE TRIGGER booking_overlap_trigger
     BEFORE INSERT ON Booking
     FOR EACH ROW
     EXECUTE FUNCTION prevent_overlap_booking();
+-- =========================
+-- PREVENT DUPLICATE MANAGERS PER HOTEL
+-- =========================
+CREATE OR REPLACE FUNCTION prevent_duplicate_manager()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.Role = 'manager' THEN
+        IF EXISTS (
+            SELECT 1 FROM Employee
+            WHERE Hotel_ID = NEW.Hotel_ID
+            AND Role = 'manager'
+            AND SSN != NEW.SSN
+        ) THEN
+            RAISE EXCEPTION 'Hotel % already has a manager!', NEW.Hotel_ID;
+END IF;
+END IF;
+RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER manager_per_hotel_trigger
+    BEFORE INSERT OR UPDATE ON Employee
+                         FOR EACH ROW
+                         EXECUTE FUNCTION prevent_duplicate_manager();
 -- All available rooms
 SELECT *
 FROM Room r

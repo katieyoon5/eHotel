@@ -12,7 +12,7 @@
 2. Run database.sql
 3. Configure ConnectionDB.java
 4. Deploy on Tomcat
-5. Open http://localhost:8080/project
+5. Open the local host link
 
 ## Features
 - Search rooms

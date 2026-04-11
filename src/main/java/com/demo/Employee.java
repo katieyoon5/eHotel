@@ -86,23 +86,40 @@ public class Employee {
         }
         return null;
     }
-
-    // insert employee
+    //insert employee
     public static void insertEmployee(String firstName, String middleName, String lastName,
-                                      String address, String role, int hotelId) throws Exception {
+                                      String address, String role, int hotelId,
+                                      String username, String password) throws Exception {
         ConnectionDB db = new ConnectionDB();
-        String sql = "INSERT INTO Employee (firstname, middlename, lastname, address, role, hotel_id) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Employee (firstname, middlename, lastname, address, role, hotel_id, username, password) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?) RETURNING SSN";
 
         try (Connection con = db.getConnection();
              PreparedStatement stmt = con.prepareStatement(sql)) {
 
             stmt.setString(1, firstName);
-            stmt.setString(2, middleName.isEmpty() ? null : middleName);
+            stmt.setString(2, middleName == null || middleName.isEmpty() ? null : middleName);
             stmt.setString(3, lastName);
             stmt.setString(4, address);
             stmt.setString(5, role);
             stmt.setInt(6, hotelId);
-            stmt.executeUpdate();
+            stmt.setString(7, username == null || username.isEmpty() ? null : username);
+            stmt.setString(8, password == null || password.isEmpty() ? null : password);
+
+            ResultSet rs = stmt.executeQuery();
+
+            // if manager, update hotel's manager_ssn
+            if (rs.next() && role.equals("manager")) {
+                int newSSN = rs.getInt("SSN");
+                String updateSql = "UPDATE Hotel SET Manager_SSN = ? WHERE Hotel_ID = ?";
+                PreparedStatement updateStmt = con.prepareStatement(updateSql);
+                updateStmt.setInt(1, newSSN);
+                updateStmt.setInt(2, hotelId);
+                updateStmt.executeUpdate();
+                updateStmt.close();
+            }
+
+            rs.close();
 
         } catch (Exception e) {
             System.out.println("DB ERROR: " + e.getMessage());

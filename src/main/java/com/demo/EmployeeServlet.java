@@ -21,9 +21,10 @@ public class EmployeeServlet extends HttpServlet {
                 String address = request.getParameter("address");
                 String role = request.getParameter("role");
                 int hotelId = Integer.parseInt(request.getParameter("hotelId"));
-                Employee.insertEmployee(firstName, middleName, lastName, address, role, hotelId);
+                String username = request.getParameter("username");
+                String password = request.getParameter("password");
+                Employee.insertEmployee(firstName, middleName, lastName, address, role, hotelId, username, password);
                 response.sendRedirect("manageEmployees.jsp?message=Employee+added+successfully!");
-
             } else if (action.equals("update")) {
                 int ssn = Integer.parseInt(request.getParameter("ssn"));
                 String firstName = request.getParameter("firstName");

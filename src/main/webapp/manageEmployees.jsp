@@ -168,6 +168,12 @@
     <label>Hotel ID</label>
     <input type="number" name="hotelId" required />
 
+    <label>Username</label>
+    <input type="text" name="username" placeholder="optional" />
+
+    <label>Password</label>
+    <input type="password" name="password" placeholder="optional" />
+
     <button type="submit" class="btn">Add Employee</button>
   </form>
   <% } %>

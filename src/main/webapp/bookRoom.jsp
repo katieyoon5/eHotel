@@ -6,6 +6,8 @@
 <%
 int hotelId = Integer.parseInt(request.getParameter("hotelId"));
 int roomNumber = Integer.parseInt(request.getParameter("roomNumber"));
+List<String> amenities = Room.getAmenities(hotelId, roomNumber);
+List<String> issues = Room.getIssues(hotelId, roomNumber);
 
 Integer userID = (Integer) session.getAttribute("userID");
 
@@ -96,6 +98,45 @@ List<String> blockedDates = Room.getBlockedDates(hotelId, roomNumber);
 <div class="form-box">
 
 <h2>Book Room <%= roomNumber %></h2>
+
+<div style="margin-bottom:15px; font-size:14px; color:#355099; line-height:1.4;">
+    <div><b>Hotel Chain:</b> <%= room.getChainAddress() %></div>
+    <div><b>Hotel:</b> <%= room.getHotelAddress() %></div>
+
+    <div>
+        <b>Amenities:</b>
+        <%
+            if (amenities != null && !amenities.isEmpty()) {
+                for (int i = 0; i < amenities.size(); i++) {
+        %>
+            <%= amenities.get(i) %><%= (i < amenities.size()-1 ? ", " : "") %>
+        <%
+                }
+            } else {
+        %>
+            None
+        <%
+            }
+        %>
+    </div>
+
+    <div>
+        <b>Issues:</b>
+        <%
+            if (issues != null && !issues.isEmpty()) {
+                for (int i = 0; i < issues.size(); i++) {
+        %>
+            <%= issues.get(i) %><%= (i < issues.size()-1 ? ", " : "") %>
+        <%
+                }
+            } else {
+        %>
+            None
+        <%
+            }
+        %>
+    </div>
+</div>
 
 <form action="BookRoomServlet" method="post">
 

@@ -33,12 +33,14 @@
             font-size: 14px;
         }
         .logout:hover { background: #c1d6f5; }
+
         .header {
             text-align: center;
             margin-bottom: 2.5rem;
         }
         .header h1 { font-size: 32px; color: #0e1130; margin: 0 0 6px; }
         .header p { font-size: 18px; color: #355099; margin: 0; }
+
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -46,6 +48,7 @@
             max-width: 1200px;
             margin: 0 auto;
         }
+
         .card {
             background: white;
             border-radius: 12px;
@@ -54,19 +57,33 @@
             text-decoration: none;
             display: block;
         }
+
         .card:hover { background: #c1d6f5; }
+
         .card-title {
             color: #0e1130;
             font-weight: bold;
             margin: 0 0 8px;
             font-size: 18px;
         }
+
         .card-sub {
             color: #355099;
             margin: 0;
             font-size: 14px;
         }
-        .back { display: block; text-align: center; margin-bottom: 1rem; color: #355099; }
+
+        .back {
+            display: block;
+            text-align: center;
+            margin-bottom: 1rem;
+            color: #355099;
+        }
+
+        form {
+            text-align: center;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 
@@ -82,14 +99,38 @@ if (userID == null) {
 
 Customer customer = Customer.getCustomerById(userID);
 
+// SORT
+String sortBy = request.getParameter("sortBy");
+if (sortBy == null) sortBy = "price";
+
+// SEARCH (all optional)
+String hotelSearch = request.getParameter("hotelSearch");
+String chainSearch = request.getParameter("chainSearch");
+String minPrice = request.getParameter("minPrice");
+String maxPrice = request.getParameter("maxPrice");
+String capacity = request.getParameter("capacity");
+
 List<Room> rooms = null;
 
 try {
-    rooms = Room.getRooms("price");
+    if ((hotelSearch != null && !hotelSearch.isEmpty()) ||
+        (chainSearch != null && !chainSearch.isEmpty()) ||
+        (minPrice != null && !minPrice.isEmpty()) ||
+        (maxPrice != null && !maxPrice.isEmpty()) ||
+        (capacity != null && !capacity.isEmpty())) {
+
+        rooms = Room.searchRooms(hotelSearch, chainSearch, minPrice, maxPrice, capacity);
+
+    } else {
+        // otherwise just sort
+        rooms = Room.getRooms(sortBy);
+    }
+
 } catch (Exception e) {
-    out.println("Error loading rooms: " + e.getMessage());
+    out.println("Error: " + e.getMessage());
 }
 %>
+
 
 <div class="topbar">
     <a href="logout.jsp" class="logout">Logout</a>
@@ -99,22 +140,35 @@ try {
     <h1>Welcome, <%= customer.getFirstName() %>!</h1>
     <p>View Available Rooms</p>
 </div>
-<a class="back" href="customerDashboard.jsp"> Back to Dashboard</a>
 
+<a class="back" href="customerDashboard.jsp">Back to Dashboard</a>
 
 <h2 style="text-align:center;">Available Rooms</h2>
 
-<form method="get" style="text-align:center; margin-bottom:20px;">
+
+<!-- SEARCH FORM -->
+<form method="get">
+    <input type="text" name="hotelSearch" placeholder="Hotel Address">
+    <input type="text" name="chainSearch" placeholder="Chain Address">
+    <input type="number" name="minPrice" placeholder="Min Price">
+    <input type="number" name="maxPrice" placeholder="Max Price">
+    <input type="number" name="capacity" placeholder="Min Capacity">
+    <button type="submit">Search</button>
+</form>
+
+
+
+<!-- SORT FORM -->
+<form method="get">
     <select name="sortBy">
-        <option value="price">Price</option>
-        <option value="capacity">Capacity</option>
-        <option value="chain">Hotel Chain</option>
-        <option value="rating">Hotel Rating</option>
-        <option value="area">Area</option>
+        <option value="price" <%= "price".equals(sortBy) ? "selected" : "" %>>Price (Low → High)</option>
+        <option value="capacity" <%= "capacity".equals(sortBy) ? "selected" : "" %>>Capacity</option>
+        <option value="chain" <%= "chain".equals(sortBy) ? "selected" : "" %>>Hotel Chain</option>
+        <option value="rating" <%= "rating".equals(sortBy) ? "selected" : "" %>>Hotel Rating</option>
+        <option value="area" <%= "area".equals(sortBy) ? "selected" : "" %>>Area</option>
     </select>
     <button type="submit">Sort</button>
 </form>
-
 
 <div class="grid">
 
@@ -131,9 +185,10 @@ if (rooms != null && !rooms.isEmpty()) {
         <p class="card-sub">Capacity: <%= r.getCapacity() %></p>
         <p class="card-sub">View: <%= r.getView() %></p>
         <p class="card-sub">Extendable: <%= r.getExtendable() %></p>
-        <p class="card-sub">Rating: <%= r.getHotelRating() %> ⭐</p>
+        <p class="card-sub">Rating: <%= r.getRating() %> ⭐</p>
         <p class="card-sub">Hotel: <%= r.getHotelAddress() %></p>
         <p class="card-sub">Chain: <%= r.getChainAddress() %></p>
+
     </a>
 
 <%

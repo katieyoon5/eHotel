@@ -89,7 +89,7 @@ customer = Customer.getCustomerById(userID);
         <p class="card-title">View Bookings</p>
         <p class="card-sub">view or delete past bookings</p>
     </a>
-    <a href="views.jsp" class="card">
+    <a href="customerViews.jsp" class="card">
         <p class="card-title">Room Statistics</p>
         <p class="card-sub">View availability & capacity</p>
     </a>

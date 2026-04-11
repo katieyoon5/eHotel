@@ -1,17 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <%@ page import="java.util.List" %>
-<%@ page import="com.demo.Hotel" %>
-
-<%
-    List<Hotel> hotels = null;
-
-    try {
-        hotels = Hotel.getHotels();
-    } catch (Exception e) {
-        e.printStackTrace();
-    }
-%>
 
 <!DOCTYPE html>
 <html>
@@ -31,13 +20,6 @@
         background-color: #0e1130;
         padding-top: 20px;
         padding-bottom: 20px;
-    }
-    .container {
-        max-width: 1000px;
-    }
-
-    .card {
-        border-radius: 10px;
     }
     </style>
 </head>
@@ -67,42 +49,8 @@
   </div>
 </nav>
 
-
-<div class="container mt-4">
-
-    <h2 class="text-center mb-3">Register to book amazing stays!</h2>
-    <p class="text-center text-muted">Sea views, mountains, and more 🌊⛰️</p>
-    <div class="my-4">
-        <img src="https://media.tripcentral.ca//media/00_0L_AD_Last-Minute-Vacations-All-Inclusive.jpg" class="img-fluid w-100 rounded">
-    </div>
-
-    <h4 class="mt-5 mb-3">Our Hotels</h4>
-
-    <div class="row">
-    <%
-        if (hotels != null && !hotels.isEmpty()) {
-            for (Hotel h : hotels) {
-    %>
-        <div class="col-md-4 mb-3">
-            <div class="card p-3 shadow-sm">
-                <h5><i class="fas fa-hotel"></i> <%= h.getAddress() %></h5>
-                <p class="mb-1">⭐ Rating: <%= h.getRating() %></p>
-            </div>
-        </div>
-
-    <%
-            }
-        } else {
-    %>
-
-        <p>No hotels available.</p>
-
-    <%
-        }
-    %>
-    </div>
-
-</div>
+<h4 class="text-center mt-4">By: Katie Yoon 300420299 and Ariel Syal 300414545</h4>
+<h4 class="text-center mt-4">Project Created using Intellij, BDeaver, java, javascript, css, html, boostrap</h4>
 
 
 

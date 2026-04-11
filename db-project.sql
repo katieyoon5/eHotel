@@ -112,7 +112,7 @@ CREATE TABLE RoomAmenities (
                                Amenity TEXT,
                                PRIMARY KEY (Hotel_ID, RoomNumber, Amenity),
                                FOREIGN KEY (Hotel_ID, RoomNumber)
-                                   REFERENCES Room(Hotel_ID, RoomNumber)
+                               REFERENCES Room(Hotel_ID, RoomNumber)
 );
 CREATE TABLE RoomIssues (
                             Hotel_ID INT,
@@ -229,17 +229,17 @@ INSERT INTO Hotel (rating, address, chain_id) VALUES
                                                   (1.5, '454 spell rd', 5),
                                                   (5.0, '565 potion st', 5),
                                                   (4.0, '676 dragon way', 5);
-INSERT INTO Employee (FirstName, MiddleName, LastName, Address, Role, Hotel_ID) VALUES
-                                                                                    ('Alice', NULL, 'Joe', '4129 Sunnybrook Ln', 'manager', 1),
-                                                                                    ('Kiara', NULL, 'Maynard', '1142 Severn St', 'manager', 2),
-                                                                                    ('Megan', NULL, 'Gross', '323 Riverdale Dr.', 'manager', 3),
-                                                                                    ('Belen', NULL, 'Springer', '4541 Gordon Way', 'manager', 4),
-                                                                                    ('Luisa', NULL, 'Nickerson', '1026 Shinnecock Dr', 'manager', 5),
-                                                                                    ('Dillan', NULL, 'Weathers', '2044W Flag Way', 'manager', 6),
-                                                                                    ('Lucina', NULL, 'Zhou', '1569 Harrisburg Dr', 'manager', 7),
-                                                                                    ('Peter', NULL, 'Kim', '1569 Harrison Dr', 'manager', 8),
-                                                                                    ('Kimmy', NULL, 'Lee', '1523 Harrisonburg Dr', 'manager', 9),
-                                                                                    ('Tamara', NULL, 'Kane', '567 W Cross Rd', 'manager', 10);
+INSERT INTO Employee (FirstName, MiddleName, LastName, Address, Role, Hotel_ID, Username, Password) VALUES
+                                                                                    ('Alice', NULL, 'Joe', '4129 Sunnybrook Ln', 'manager', 1, 'user1', '123'),
+                                                                                    ('Kiara', NULL, 'Maynard', '1142 Severn St', 'manager', 2, 'user2', '123'),
+                                                                                    ('Megan', NULL, 'Gross', '323 Riverdale Dr.', 'manager', 3, 'user3', '234'),
+                                                                                    ('Belen', NULL, 'Springer', '4541 Gordon Way', 'manager', 4, 'user4', '123'),
+                                                                                    ('Luisa', NULL, 'Nickerson', '1026 Shinnecock Dr', 'manager', 5, 'user5', '123'),
+                                                                                    ('Dillan', NULL, 'Weathers', '2044W Flag Way', 'manager', 6, 'user6', '234'),
+                                                                                    ('Lucina', NULL, 'Zhou', '1569 Harrisburg Dr', 'manager', 7, 'user7', '234'),
+                                                                                    ('Peter', NULL, 'Kim', '1569 Harrison Dr', 'manager', 8, 'user8', '234'),
+                                                                                    ('Kimmy', NULL, 'Lee', '1523 Harrisonburg Dr', 'manager', 9, 'user9', '123'),
+                                                                                    ('Tamara', NULL, 'Kane', '567 W Cross Rd', 'manager', 10, 'user10', '123');
 -- =========================
 -- SET MANAGERS
 -- =========================
@@ -254,10 +254,10 @@ UPDATE Hotel SET Manager_SSN = 7 WHERE Hotel_ID = 7;
 UPDATE Hotel SET Manager_SSN = 8 WHERE Hotel_ID = 8;
 UPDATE Hotel SET Manager_SSN = 9 WHERE Hotel_ID = 9;
 UPDATE Hotel SET Manager_SSN = 10 WHERE Hotel_ID = 10;
-INSERT INTO Customer (FirstName, MiddleName, LastName, Address, RegistrationDate) VALUES
-                                                                                      ('Hermione', NULL, 'Granger', '54 lakehouse', '2026-05-02'),
-                                                                                      ('Harry', NULL, 'Potter', '77 disney land', '2026-12-05'),
-                                                                                      ('Ron', NULL, 'Weasley', '45 jane doe', '2026-11-04');
+INSERT INTO Customer (FirstName, MiddleName, LastName, Address, RegistrationDate, Username, Password) VALUES
+                                                                                      ('Hermione', NULL, 'Granger', '54 lakehouse', '2026-05-02', 'cust1', '123'),
+                                                                                      ('Harry', NULL, 'Potter', '77 disney land', '2026-12-05', 'cust2', '123'),
+                                                                                      ('Ron', NULL, 'Weasley', '45 jane doe', '2026-11-04', 'cust3', '123');
 INSERT INTO Room (Hotel_ID, Chain_ID, RoomNumber, Price, Capacity, View, Extendable) VALUES
                                                                                          -- Hotel 1 (5 rooms, different capacities)
                                                                                          (1, 1, 101, 112, 2, 'sea', TRUE),
@@ -270,8 +270,291 @@ INSERT INTO Room (Hotel_ID, Chain_ID, RoomNumber, Price, Capacity, View, Extenda
                                                                                          (2, 1,202, 110, 3, 'mountain', FALSE),
                                                                                          (2, 1,203, 120, 4, 'mountain', TRUE),
                                                                                          (2, 1,204, 130, 5, 'mountain', FALSE),
-                                                                                         (2, 1,205, 140, 6, 'mountain', TRUE);
---Add more rooms later, amentinites, issues
+                                                                                         (2, 1,205, 140, 6, 'mountain', TRUE),
+                                                                                         -- Hotel 3
+                                                                                         (3, 1,201, 100, 2, 'mountain', TRUE),
+                                                                                         (3, 1,202, 110, 3, 'sea', FALSE),
+                                                                                         (3, 1,203, 120, 4, 'mountain', TRUE),
+                                                                                         (3, 1,204, 130, 5, 'mountain', FALSE),
+                                                                                         (3, 1,205, 140, 6, 'sea', TRUE),
+
+                                                                                         -- Hotel 4
+                                                                                         (4, 1,201, 100, 2, 'mountain', TRUE),
+                                                                                         (4, 1,202, 110, 3, 'sea', FALSE),
+                                                                                         (4, 1,203, 120, 4, 'mountain', TRUE),
+                                                                                         (4, 1,204, 130, 5, 'mountain', FALSE),
+                                                                                         (4, 1,205, 140, 6, 'sea', TRUE),
+
+                                                                                         -- Hotel 5
+                                                                                         (5, 1,201, 50, 2, 'mountain', TRUE),
+                                                                                         (5, 1,202, 30, 3, 'mountain', FALSE),
+                                                                                         (5, 1,203, 101, 4, 'sea', TRUE),
+                                                                                         (5, 1,204, 101, 5, 'mountain', FALSE),
+                                                                                         (5, 1,205, 140, 6, 'mountain', TRUE),
+
+                                                                                         -- Hotel 6
+                                                                                         (6, 1,201, 200, 2, 'mountain', TRUE),
+                                                                                         (6, 1,202, 110, 3, 'mountain', FALSE),
+                                                                                         (6, 1,203, 120, 4, 'mountain', TRUE),
+                                                                                         (6, 1,204, 130, 5, 'sea', FALSE),
+                                                                                         (6, 1,205, 140, 6, 'mountain', TRUE),
+                                                                                         -- Hotel 7
+                                                                                         (7, 1,201, 100, 2, 'sea', TRUE),
+                                                                                         (7, 1,202, 99, 3, 'mountain', FALSE),
+                                                                                         (7, 1,203, 120, 4, 'mountain', TRUE),
+                                                                                         (7, 1,204, 130, 5, 'mountain', FALSE),
+                                                                                         (7, 1,205, 140, 6, 'mountain', TRUE),
+                                                                                         -- Hotel 8
+                                                                                         (8, 1,201, 100, 2, 'mountain', TRUE),
+                                                                                         (8, 1,202, 110, 3, 'mountain', FALSE),
+                                                                                         (8, 1,203, 120, 4, 'mountain', TRUE),
+                                                                                         (8, 1,204, 130, 5, 'mountain', FALSE),
+                                                                                         (8, 1,205, 140, 6, 'mountain', TRUE),
+                                                                                         -- Hotel 9
+                                                                                         (9, 2,201, 100, 2, 'mountain', TRUE),
+                                                                                         (9, 2,202, 110, 3, 'mountain', FALSE),
+                                                                                         (9, 2,203, 120, 4, 'mountain', TRUE),
+                                                                                         (9, 2,204, 130, 5, 'mountain', FALSE),
+                                                                                         (9, 2,205, 140, 6, 'mountain', TRUE),
+                                                                                         -- Hotel 2
+                                                                                         (10, 2,201, 99, 2, 'mountain', TRUE),
+                                                                                         (10, 2,202, 110, 3, 'mountain', FALSE),
+                                                                                         (10, 2,203, 120, 4, 'mountain', TRUE),
+                                                                                         (10, 2,204, 400, 5, 'mountain', FALSE),
+                                                                                         (10, 2,205, 140, 6, 'mountain', TRUE),
+                                                                                         -- Hotel 2
+                                                                                         (11, 2,201, 100, 2, 'mountain', TRUE),
+                                                                                         (11, 2,202, 500, 3, 'mountain', FALSE),
+                                                                                         (11, 2,203, 120, 4, 'mountain', TRUE),
+                                                                                         (11, 2,204, 130, 5, 'mountain', FALSE),
+                                                                                         (11, 2,205, 140, 6, 'mountain', TRUE),
+                                                                                         -- Hotel 2
+                                                                                         (12, 2,201, 100, 2, 'mountain', TRUE),
+                                                                                         (12, 2,202, 110, 3, 'mountain', FALSE),
+                                                                                         (12, 2,203, 120, 4, 'mountain', TRUE),
+                                                                                         (12, 2,204, 130, 5, 'mountain', FALSE),
+                                                                                         (12, 2,205, 140, 6, 'mountain', TRUE),
+                                                                                         -- Hotel 2
+                                                                                         (13, 2,201, 100, 2, 'mountain', TRUE),
+                                                                                         (13, 2,202, 110, 3, 'mountain', FALSE),
+                                                                                         (13, 2,203, 120, 4, 'mountain', TRUE),
+                                                                                         (13, 2,204, 130, 5, 'mountain', FALSE),
+                                                                                         (13, 2,205, 140, 6, 'mountain', TRUE),
+                                                                                         -- Hotel 2
+                                                                                         (14, 2,201, 600, 2, 'mountain', TRUE),
+                                                                                         (14, 2,202, 110, 3, 'mountain', FALSE),
+                                                                                         (14, 2,203, 120, 4, 'mountain', TRUE),
+                                                                                         (14, 2,204, 130, 5, 'mountain', FALSE),
+                                                                                         (14, 2,205, 140, 6, 'mountain', TRUE),
+                                                                                         -- Hotel 2
+                                                                                         (15, 2,201, 870, 2, 'mountain', TRUE),
+                                                                                         (15, 2,202, 110, 3, 'mountain', FALSE),
+                                                                                         (15, 2,203, 120, 4, 'mountain', TRUE),
+                                                                                         (15, 2,204, 130, 5, 'mountain', FALSE),
+                                                                                         (15, 2,205, 140, 6, 'mountain', TRUE),
+                                                                                         -- Hotel 2
+                                                                                         (16, 2,201, 900, 2, 'mountain', TRUE),
+                                                                                         (16, 2,202, 110, 3, 'mountain', FALSE),
+                                                                                         (16, 2,203, 120, 4, 'mountain', TRUE),
+                                                                                         (16, 2,204, 130, 5, 'mountain', FALSE),
+                                                                                         (16, 2,205, 140, 6, 'mountain', TRUE),
+                                                                                         -- Hotel 2
+                                                                                         (17, 3,201, 100, 2, 'mountain', TRUE),
+                                                                                         (17, 3,202, 110, 3, 'mountain', FALSE),
+                                                                                         (17, 3,203, 120, 4, 'mountain', TRUE),
+                                                                                         (17, 3,204, 130, 5, 'mountain', FALSE),
+                                                                                         (17, 3,205, 140, 6, 'mountain', TRUE),
+                                                                                         -- Hotel 2
+                                                                                         (18, 3,201, 585, 2, 'mountain', TRUE),
+                                                                                         (18, 3,202, 110, 3, 'mountain', FALSE),
+                                                                                         (18, 3,203, 120, 4, 'mountain', TRUE),
+                                                                                         (18, 3,204, 130, 5, 'mountain', FALSE),
+                                                                                         (18, 3,205, 140, 6, 'mountain', TRUE),
+                                                                                         -- Hotel 2
+                                                                                         (19, 3,201, 88, 2, 'mountain', TRUE),
+                                                                                         (19, 3,202, 110, 3, 'mountain', FALSE),
+                                                                                         (19, 3,203, 120, 4, 'mountain', TRUE),
+                                                                                         (19, 3,204, 130, 5, 'mountain', FALSE),
+                                                                                         (19, 3,205, 140, 6, 'mountain', TRUE),
+                                                                                         -- Hotel 2
+                                                                                         (20, 3,201, 750, 2, 'mountain', TRUE),
+                                                                                         (20, 3,202, 110, 3, 'mountain', FALSE),
+                                                                                         (20, 3,203, 120, 4, 'mountain', TRUE),
+                                                                                         (20, 3,204, 130, 5, 'mountain', FALSE),
+                                                                                         (20, 3,205, 140, 6, 'mountain', TRUE),
+                                                                                         -- Hotel 2
+                                                                                         (21, 3,201, 100, 2, 'mountain', TRUE),
+                                                                                         (21, 3,202, 110, 3, 'mountain', FALSE),
+                                                                                         (21, 3,203, 120, 4, 'mountain', TRUE),
+                                                                                         (21, 3,204, 130, 5, 'mountain', FALSE),
+                                                                                         (21, 3,205, 140, 6, 'mountain', TRUE),
+                                                                                         -- Hotel 2
+                                                                                         (22, 3,201, 100, 2, 'mountain', TRUE),
+                                                                                         (22, 3,202, 110, 3, 'mountain', FALSE),
+                                                                                         (22, 3,203, 120, 4, 'mountain', TRUE),
+                                                                                         (22, 3,204, 130, 5, 'mountain', FALSE),
+                                                                                         (22, 3,205, 140, 6, 'mountain', TRUE),
+                                                                                         -- Hotel 2
+                                                                                         (23, 3,201, 100, 2, 'mountain', TRUE),
+                                                                                         (23, 3,202, 110, 3, 'mountain', FALSE),
+                                                                                         (23, 3,203, 120, 4, 'mountain', TRUE),
+                                                                                         (23, 3,204, 130, 5, 'mountain', FALSE),
+                                                                                         (23, 3,205, 140, 6, 'mountain', TRUE),
+                                                                                         -- Hotel 2
+                                                                                         (24, 3,201, 100, 2, 'mountain', TRUE),
+                                                                                         (24, 3,202, 110, 3, 'mountain', FALSE),
+                                                                                         (24, 3,203, 120, 4, 'mountain', TRUE),
+                                                                                         (24, 3,204, 130, 5, 'mountain', FALSE),
+                                                                                         (24, 3,205, 140, 6, 'mountain', TRUE),
+                                                                                         -- Hotel 2
+                                                                                         (25, 4,201, 100, 2, 'mountain', TRUE),
+                                                                                         (25, 4,202, 110, 3, 'mountain', FALSE),
+                                                                                         (25, 4,203, 120, 4, 'mountain', TRUE),
+                                                                                         (25, 4,204, 130, 5, 'mountain', FALSE),
+                                                                                         (25, 4,205, 140, 6, 'mountain', TRUE),
+                                                                                         -- Hotel 2
+                                                                                         (26, 4,201, 100, 2, 'mountain', TRUE),
+                                                                                         (26, 4,202, 110, 3, 'mountain', FALSE),
+                                                                                         (26, 4,203, 120, 4, 'mountain', TRUE),
+                                                                                         (26, 4,204, 130, 5, 'mountain', FALSE),
+                                                                                         (26, 4,205, 140, 6, 'mountain', TRUE),
+                                                                                         -- Hotel 2
+                                                                                         (27, 4,201, 100, 2, 'mountain', TRUE),
+                                                                                         (27, 4,202, 110, 3, 'mountain', FALSE),
+                                                                                         (27, 4,203, 120, 4, 'mountain', TRUE),
+                                                                                         (27, 4,204, 130, 5, 'mountain', FALSE),
+                                                                                         (27, 4,205, 140, 6, 'mountain', TRUE),
+                                                                                         -- Hotel 2
+                                                                                         (28, 4,201, 100, 2, 'mountain', TRUE),
+                                                                                         (28, 4,202, 110, 3, 'mountain', FALSE),
+                                                                                         (28, 4,203, 120, 4, 'mountain', TRUE),
+                                                                                         (28, 4,204, 130, 5, 'mountain', FALSE),
+                                                                                         (28, 4,205, 140, 6, 'mountain', TRUE),
+                                                                                         -- Hotel 2
+                                                                                         (29, 4,201, 100, 2, 'mountain', TRUE),
+                                                                                         (29, 4,202, 110, 3, 'mountain', FALSE),
+                                                                                         (29, 4,203, 120, 4, 'mountain', TRUE),
+                                                                                         (29, 4,204, 130, 5, 'mountain', FALSE),
+                                                                                         (29, 4,205, 140, 6, 'mountain', TRUE),
+                                                                                         -- Hotel 2
+                                                                                         (30, 4,201, 100, 2, 'mountain', TRUE),
+                                                                                         (30, 4,202, 110, 3, 'mountain', FALSE),
+                                                                                         (30, 4,203, 120, 4, 'mountain', TRUE),
+                                                                                         (30, 4,204, 130, 5, 'mountain', FALSE),
+                                                                                         (30, 4,205, 140, 6, 'mountain', TRUE),
+                                                                                         -- Hotel 2
+                                                                                         (31, 4,201, 100, 2, 'mountain', TRUE),
+                                                                                         (31, 4,202, 110, 3, 'mountain', FALSE),
+                                                                                         (31, 4,203, 120, 4, 'mountain', TRUE),
+                                                                                         (31, 4,204, 130, 5, 'mountain', FALSE),
+                                                                                         (31, 4,205, 140, 6, 'mountain', TRUE),
+
+                                                                                         -- Hotel 2
+                                                                                         (32, 4,201, 100, 2, 'mountain', TRUE),
+                                                                                         (32, 4,202, 110, 3, 'mountain', FALSE),
+                                                                                         (32, 4,203, 120, 4, 'mountain', TRUE),
+                                                                                         (32, 4,204, 130, 5, 'mountain', FALSE),
+                                                                                         (32, 4,205, 140, 6, 'mountain', TRUE),
+                                                                                         -- Hotel 2
+                                                                                         (33, 5,201, 100, 2, 'mountain', TRUE),
+                                                                                         (33, 5,202, 110, 3, 'mountain', FALSE),
+                                                                                         (33, 5,203, 120, 4, 'mountain', TRUE),
+                                                                                         (33, 5,204, 130, 5, 'mountain', FALSE),
+                                                                                         (33, 5,205, 140, 6, 'mountain', TRUE),
+
+                                                                                         -- Hotel 2
+                                                                                         (34, 5,201, 100, 2, 'mountain', TRUE),
+                                                                                         (34, 5,202, 110, 3, 'mountain', FALSE),
+                                                                                         (34, 5,203, 120, 4, 'mountain', TRUE),
+                                                                                         (34, 5,204, 130, 5, 'mountain', FALSE),
+                                                                                         (34, 5,205, 140, 6, 'mountain', TRUE),
+
+                                                                                         -- Hotel 2
+                                                                                         (35, 5,201, 100, 2, 'mountain', TRUE),
+                                                                                         (35, 5,202, 110, 3, 'mountain', FALSE),
+                                                                                         (35, 5,203, 120, 4, 'mountain', TRUE),
+                                                                                         (35, 5,204, 130, 5, 'mountain', FALSE),
+                                                                                         (35, 5,205, 140, 6, 'mountain', TRUE),
+
+                                                                                         -- Hotel 2
+                                                                                         (36, 5,201, 100, 2, 'mountain', TRUE),
+                                                                                         (36, 5,202, 110, 3, 'mountain', FALSE),
+                                                                                         (36, 5,203, 120, 4, 'mountain', TRUE),
+                                                                                         (36, 5,204, 130, 5, 'mountain', FALSE),
+                                                                                         (36, 5,205, 140, 6, 'mountain', TRUE),
+
+                                                                                         -- Hotel 2
+                                                                                         (37, 5,201, 100, 2, 'mountain', TRUE),
+                                                                                         (37, 5,202, 110, 3, 'mountain', FALSE),
+                                                                                         (37, 5,203, 120, 4, 'mountain', TRUE),
+                                                                                         (37, 5,204, 130, 5, 'mountain', FALSE),
+                                                                                         (37, 5,205, 140, 6, 'mountain', TRUE),
+
+                                                                                         -- Hotel 2
+                                                                                         (38, 5,201, 100, 2, 'mountain', TRUE),
+                                                                                         (38, 5,202, 110, 3, 'mountain', FALSE),
+                                                                                         (38, 5,203, 120, 4, 'mountain', TRUE),
+                                                                                         (38, 5,204, 130, 5, 'mountain', FALSE),
+                                                                                         (38, 5,205, 140, 6, 'mountain', TRUE),
+
+                                                                                         -- Hotel 2
+                                                                                         (39, 5,201, 100, 2, 'mountain', TRUE),
+                                                                                         (39, 5,202, 110, 3, 'mountain', FALSE),
+                                                                                         (39, 5,203, 120, 4, 'mountain', TRUE),
+                                                                                         (39, 5,204, 130, 5, 'mountain', FALSE),
+                                                                                         (39, 5,205, 140, 6, 'mountain', TRUE),
+
+                                                                                         -- Hotel 2
+                                                                                         (40, 5,201, 100, 2, 'mountain', TRUE),
+                                                                                         (40, 5,202, 110, 3, 'mountain', FALSE),
+                                                                                         (40, 5,203, 120, 4, 'mountain', TRUE),
+                                                                                         (40, 5,204, 130, 5, 'mountain', FALSE),
+                                                                                         (40, 5,205, 140, 6, 'mountain', TRUE);
+
+
+
+
+INSERT INTO RoomAmenities(Hotel_ID, RoomNumber, Amenity) VALUES
+                                                             (1, 101, 'pool'),
+                                                             (1, 101, 'coffee'),
+                                                             (1, 102, 'sauna'),
+                                                             (1, 102, 'breakfast'),
+                                                             (1, 103, 'parking'),
+                                                             (1, 103, 'pool'),
+                                                             (1, 103, 'coffee'),
+                                                             (1, 103, 'sauna'),
+                                                             (1, 104, 'breakfast'),
+                                                             (1, 104, 'parking'),
+                                                             (1, 105, 'pool'),
+                                                             (1, 105, 'coffee'),
+                                                             (2, 201, 'sauna'),
+                                                             (2, 201, 'breakfast'),
+                                                             (2, 201, 'parking');
+INSERT INTO RoomIssues(Hotel_ID, RoomNumber, Issue) VALUES
+                                                        (1, 101, 'Slow Wifi'),
+                                                        (1, 101, 'Noisy Neighbours'),
+                                                        (1, 102, 'Bad Breakfast'),
+                                                        (1, 102, 'Slow Wifi'),
+                                                        (1, 103, 'Bad Breakfast'),
+                                                        (1, 103, 'Noisy Neighbours'),
+                                                        (1, 103, 'Slow Wifi'),
+                                                        (1, 103, 'Lack of Supply'),
+                                                        (1, 104, 'Bad Breakfast'),
+                                                        (1, 104, 'Slow Wifi'),
+                                                        (1, 105, 'Lack of Supply'),
+                                                        (1, 105, 'Slow Wifi'),
+                                                        (2, 201, 'Noisy Neighbours'),
+                                                        (2, 201, 'Lack of Supply'),
+
+                                                        (2, 201, 'Bad Breakfast'),
+
+                                                        (4, 201, 'Slow Wifi'),
+                                                        (4, 201, 'Noisy Neighbours'),
+                                                        (4, 201, 'Lack of Supply'),
+                                                        (5, 205, 'Slow Wifi'),
+                                                        (5, 201, 'Noisy Neighbours'),
+                                                        (5, 201, 'Lack of Supply');
+
 INSERT INTO Booking (StartDate, EndDate, Hotel_ID, RoomNumber, Cust_ID) VALUES
     ('2026-12-22', '2026-12-26', 1, 101, 1);
 INSERT INTO Renting (Start_Date, End_Date, Hotel_ID, RoomNumber, Cust_ID, SSN) VALUES

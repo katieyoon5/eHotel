@@ -39,7 +39,7 @@ public class Room {
 
     public String getHotelAddress() { return hotelAddress; }
     public String getChainAddress() { return chainAddress; }
-    public float getHotelRating() { return rating; }
+    public float getRating() { return rating; }
     // =========================
     // get all rooms
     // =========================
@@ -49,31 +49,35 @@ public class Room {
 
         String orderBy;
 
-        if ("price".equals(sortBy)) {
-            orderBy = "r.Price";
-        } else if ("capacity".equals(sortBy)) {
-            orderBy = "r.Capacity DESC";
-        } else if ("chain".equals(sortBy)) {
-            orderBy = "hc.Office_Address";
-        } else if ("rating".equals(sortBy)) {
-            orderBy = "h.Rating DESC";
-        } else if ("area".equals(sortBy)) {
-            orderBy = "h.Address";
-        } else {
-            orderBy = "r.Price";
+        switch (sortBy == null ? "price" : sortBy) {
+            case "price":
+                orderBy = "r.Price ASC";
+                break;
+            case "capacity":
+                orderBy = "r.Capacity ASC";
+                break;
+            case "chain":
+                orderBy = "hc.Office_Address ASC";
+                break;
+            case "rating":
+                orderBy = "h.Rating DESC";
+                break;
+            case "area":
+                orderBy = "h.Address ASC";
+                break;
+            default:
+                orderBy = "r.Price ASC";
         }
 
-        String sql = """
-        SELECT r.*,
-               h.Address AS hotelAddress,
-               h.Rating AS rating,
-               hc.Office_Address AS chainAddress
-        FROM Room r
-        JOIN Hotel h ON r.Hotel_ID = h.Hotel_ID
-        JOIN Hotel_Chain hc ON h.Chain_ID = hc.Chain_ID
-        ORDER BY %s
-    """.formatted(orderBy);
-
+        String sql =
+                "SELECT r.*, " +
+                "h.Address AS hotelAddress, " +
+                "h.Rating AS rating, " +
+                "hc.Office_Address AS chainAddress " +
+                "FROM Room r " +
+                "JOIN Hotel h ON r.Hotel_ID = h.Hotel_ID " +
+                "JOIN Hotel_Chain hc ON h.Chain_ID = hc.Chain_ID " +
+                "ORDER BY " + orderBy;
         try (Connection con = db.getConnection();
              PreparedStatement stmt = con.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
@@ -103,20 +107,64 @@ public class Room {
 
         return rooms;
     }
-    // =========================
-    // get room by hotel id and room number
-    // =========================
-    public static Room getRoomByHotelAndNumber(int hotel_id, int roomNumber) throws Exception {
-        ConnectionDB db = new ConnectionDB();
-        String sql = "SELECT * FROM Room WHERE Hotel_ID = ? AND RoomNumber = ?";
-        try (Connection con = db.getConnection();
-             PreparedStatement stmt = con.prepareStatement(sql)) {
 
-            stmt.setInt(1, hotel_id);
-            stmt.setInt(2, roomNumber);
+    public static List<Room> searchRooms(String hotelSearch, String chainSearch,
+                                         String minPrice, String maxPrice,
+                                         String capacity) throws Exception {
+
+        List<Room> rooms = new ArrayList<>();
+        ConnectionDB db = new ConnectionDB();
+
+        StringBuilder sql = new StringBuilder("""
+            SELECT r.*,
+                   h.Address AS hotelAddress,
+                   h.Rating AS rating,
+                   hc.Office_Address AS chainAddress
+            FROM Room r
+            JOIN Hotel h ON r.Hotel_ID = h.Hotel_ID
+            JOIN Hotel_Chain hc ON h.Chain_ID = hc.Chain_ID
+            WHERE 1=1
+    """);
+
+        List<Object> params = new ArrayList<>();
+
+        if (hotelSearch != null && !hotelSearch.isEmpty()) {
+            sql.append(" AND LOWER(h.Address) LIKE ?");
+            params.add("%" + hotelSearch.toLowerCase() + "%");
+        }
+
+        if (chainSearch != null && !chainSearch.isEmpty()) {
+            sql.append(" AND LOWER(hc.Office_Address) LIKE ?");
+            params.add("%" + chainSearch.toLowerCase() + "%");
+        }
+
+        if (minPrice != null && !minPrice.isEmpty()) {
+            sql.append(" AND r.Price >= ?");
+            params.add(Float.parseFloat(minPrice));
+        }
+
+        if (maxPrice != null && !maxPrice.isEmpty()) {
+            sql.append(" AND r.Price <= ?");
+            params.add(Float.parseFloat(maxPrice));
+        }
+
+        if (capacity != null && !capacity.isEmpty()) {
+            sql.append(" AND r.Capacity >= ?");
+            params.add(Integer.parseInt(capacity));
+        }
+
+        try (Connection con = db.getConnection();
+             PreparedStatement stmt = con.prepareStatement(sql.toString())) {
+
+            // set parameters safely
+            for (int i = 0; i < params.size(); i++) {
+                stmt.setObject(i + 1, params.get(i));
+            }
+
             ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                return new Room(
+
+            while (rs.next()) {
+                Room r = new Room(
                         rs.getInt("Hotel_ID"),
                         rs.getInt("Chain_ID"),
                         rs.getInt("RoomNumber"),
@@ -125,14 +173,108 @@ public class Room {
                         rs.getString("View"),
                         rs.getBoolean("Extendable")
                 );
+
+                r.hotelAddress = rs.getString("hotelAddress");
+                r.chainAddress = rs.getString("chainAddress");
+                r.rating = rs.getFloat("rating");
+
+                rooms.add(r);
             }
-        } catch (Exception e) {
-            System.out.println("DB ERROR: " + e.getMessage());
-            throw e;
         }
-        return null;
+
+        return rooms;
     }
 
+
+    //get amenities
+    public static List<String> getAmenities(int hotelId, int roomNumber) throws Exception {
+        List<String> list = new ArrayList<>();
+        ConnectionDB db = new ConnectionDB();
+
+        String sql = "SELECT Amenity FROM RoomAmenities WHERE Hotel_ID=? AND RoomNumber=?";
+
+        try (Connection con = db.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, hotelId);
+            ps.setInt(2, roomNumber);
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(rs.getString("Amenity"));
+            }
+        }
+
+        return list;
+    }
+
+
+    //get issues
+    public static List<String> getIssues(int hotelId, int roomNumber) throws Exception {
+        List<String> list = new ArrayList<>();
+        ConnectionDB db = new ConnectionDB();
+
+        String sql = "SELECT Issue FROM RoomIssues WHERE Hotel_ID=? AND RoomNumber=?";
+
+        try (Connection con = db.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, hotelId);
+            ps.setInt(2, roomNumber);
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(rs.getString("Issue"));
+            }
+        }
+
+        return list;
+    }
+    // =========================
+    // get room by hotel id and room number
+    // =========================
+    public static Room getRoomByHotelAndNumber(int hotel_id, int roomNumber) throws Exception {
+
+        ConnectionDB db = new ConnectionDB();
+
+        String sql = """
+        SELECT r.*,
+               h.Address AS hotelAddress,
+               hc.Office_Address AS chainAddress
+        FROM Room r
+        JOIN Hotel h ON r.Hotel_ID = h.Hotel_ID
+        JOIN Hotel_Chain hc ON h.Chain_ID = hc.Chain_ID
+        WHERE r.Hotel_ID = ? AND r.RoomNumber = ?
+    """;
+
+        try (Connection con = db.getConnection();
+             PreparedStatement stmt = con.prepareStatement(sql)) {
+
+            stmt.setInt(1, hotel_id);
+            stmt.setInt(2, roomNumber);
+
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                Room r = new Room(
+                        rs.getInt("Hotel_ID"),
+                        rs.getInt("Chain_ID"),
+                        rs.getInt("RoomNumber"),
+                        rs.getFloat("Price"),
+                        rs.getInt("Capacity"),
+                        rs.getString("View"),
+                        rs.getBoolean("Extendable")
+                );
+
+                r.hotelAddress = rs.getString("hotelAddress");
+                r.chainAddress = rs.getString("chainAddress");
+
+                return r;
+            }
+        }
+
+        return null;
+    }
     // =========================
     // get all booked dates
     // =========================
